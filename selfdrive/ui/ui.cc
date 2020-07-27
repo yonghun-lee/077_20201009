@@ -427,25 +427,7 @@ void handle_message(UIState *s, SubMaster &sm) {
     auto data = sm["carState"].getCarState();
     scene.brakePress = data.getBrakePressed();
     scene.brakeLights = data.getBrakeLights();
-
-    scene.leftBlinker = data.getLeftBlinker();
-    scene.rightBlinker = data.getRightBlinker();
     scene.getGearShifter = data.getGearShifter();
-
-    scene.leftBlindspot = data.getLeftBlindspot();
-    scene.rightBlindspot = data.getRightBlindspot();
-
-    auto cruiseState = data.getCruiseState();
-
-    scene.cruiseState.standstill = cruiseState.getStandstill();
-    scene.cruiseState.modeSel = cruiseState.getModeSel();
-
-
-    auto getWheelSpeeds = data.getWheelSpeeds();
-    scene.wheel.fl = getWheelSpeeds.getFl();
-    scene.wheel.fr = getWheelSpeeds.getFr();
-    scene.wheel.rl = getWheelSpeeds.getRl();
-    scene.wheel.rr = getWheelSpeeds.getRr();    
   }
 
   s->started = scene.thermal.getStarted() || s->preview_started;
