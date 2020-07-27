@@ -25,7 +25,7 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
 //       wheel speeds stuck at 0 and we don't disengage on brake press
 AddrCheckStruct hyundai_rx_checks[] = {
   //{.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U}}},
-  //{.msg = {{902, 0, 8, .check_checksum = false, .max_counter = 15U, .expected_timestep = 10000U}}},
+  {.msg = {{902, 0, 8, .check_checksum = false, .max_counter = 15U, .expected_timestep = 10000U}}},
   //{.msg = {{916, 0, 8, .check_checksum = true, .max_counter = 7U, .expected_timestep = 10000U}}},
   {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
 };
@@ -35,7 +35,7 @@ const int HYUNDAI_RX_CHECK_LEN = sizeof(hyundai_rx_checks) / sizeof(hyundai_rx_c
 AddrCheckStruct hyundai_legacy_rx_checks[] = {
   //{.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U},
   //         {881, 0, 8, .expected_timestep = 10000U}}},
-  //{.msg = {{902, 0, 8, .expected_timestep = 20000U}}},
+  {.msg = {{902, 0, 8, .expected_timestep = 20000U}}},
   //{.msg = {{916, 0, 8, .expected_timestep = 20000U}}},
   {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
 };
@@ -57,12 +57,8 @@ static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
   int addr = GET_ADDR(to_push);
 
   uint8_t cnt;
-  if (addr == 608) {
-    cnt = (GET_BYTE(to_push, 7) >> 4) & 0x3;
-  } else if (addr == 902) {
+  if (addr == 902) {
     cnt = ((GET_BYTE(to_push, 3) >> 6) << 2) | (GET_BYTE(to_push, 1) >> 6);
-  } else if (addr == 916) {
-    cnt = (GET_BYTE(to_push, 1) >> 5) & 0x7;
   } else if (addr == 1057) {
     cnt = GET_BYTE(to_push, 7) & 0xF;
   } else {
@@ -75,11 +71,7 @@ static uint8_t hyundai_get_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
   int addr = GET_ADDR(to_push);
 
   uint8_t chksum;
-  if (addr == 608) {
-    chksum = GET_BYTE(to_push, 7) & 0xF;
-  } else if (addr == 916) {
-    chksum = GET_BYTE(to_push, 6) & 0xF;
-  } else if (addr == 1057) {
+  if (addr == 1057) {
     chksum = GET_BYTE(to_push, 7) >> 4;
   } else {
     chksum = 0;
