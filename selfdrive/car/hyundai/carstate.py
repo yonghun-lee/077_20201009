@@ -34,6 +34,8 @@ class CarState(CarStateBase):
     self.cruiseState_modeSel = 0
 
     self.driverAcc_time = 0
+    kyd = kyd_conf()
+	self.steer_Angle_Correction = float(kyd.conf['steerAngleCorrection'])
 
     # BSM
     self.leftBlindspot_time = 0
@@ -73,8 +75,7 @@ class CarState(CarStateBase):
 
     ret.standstill = ret.vEgoRaw < 0.1
 
-  	kyd = kyd_conf()
-    ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle'] - float(kyd.conf['steerAngleCorrection'])
+    ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle'] - self.steer_Angle_Correction
     ret.steeringRate = cp_sas.vl["SAS11"]['SAS_Speed']
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
