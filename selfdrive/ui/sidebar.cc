@@ -47,8 +47,6 @@ static void ui_draw_sidebar_ip_addr(UIState *s) {
   const int network_ip_x = !s->scene.uilayout_sidebarcollapsed ? 54 : -(sbr_w);
   const int network_ip_y = 255;
 
-  char network_ip_str[15];
-//  snprintf(network_ip_str, sizeof(network_ip_str), "%s", s->scene.ipAddr);
   nvgFillColor(s->vg, COLOR_WHITE);
   nvgFontSize(s->vg, 30*fFontSize);
   nvgFontFaceId(s->vg, s->font_sans_regular);
@@ -57,13 +55,12 @@ static void ui_draw_sidebar_ip_addr(UIState *s) {
 }
 
 static void ui_draw_sidebar_battery_text(UIState *s) {
-  const int battery_img_h = 36;
   const int battery_img_w = 96;
   const int battery_img_x = !s->scene.uilayout_sidebarcollapsed ? 150 : -(sbr_w);
   const int battery_img_y = 305;
 
   char battery_str[7];
-  snprintf(battery_str, sizeof(battery_str), "%d%%%s", s->scene.thermal.getBatteryPercent() * 0.01)), s->scene.thermal.getBatteryStatus() == "Charging" ? "+" : "-");
+  snprintf(battery_str, sizeof(battery_str), "%d%%%s", s->scene.thermal.getBatteryPercent(), s->scene.thermal.getBatteryStatus() == "Charging" ? "+" : "-");
   nvgFillColor(s->vg, COLOR_WHITE);
   nvgFontSize(s->vg, 44*fFontSize);
   nvgFontFaceId(s->vg, s->font_sans_regular);
@@ -71,19 +68,6 @@ static void ui_draw_sidebar_battery_text(UIState *s) {
   nvgTextBox(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_str, NULL);
 }
 
-static void ui_draw_sidebar_battery_icon(UIState *s) {
-  const int battery_img_h = 36;
-  const int battery_img_w = 76;
-  const int battery_img_x = !s->scene.uilayout_sidebarcollapsed ? 160 : -(sbr_w);
-  const int battery_img_y = 255;
-
-  int battery_img = s->scene.thermal.getBatteryStatus() == "Charging" ? s->img_battery_charging : s->img_battery;
-
-  ui_draw_rect(s->vg, battery_img_x + 6, battery_img_y + 5,
-               ((battery_img_w - 19) * (s->scene.thermal.getBatteryPercent() * 0.01)), battery_img_h - 11, COLOR_WHITE);
-
-  ui_draw_image(s->vg, battery_img_x, battery_img_y, battery_img_w, battery_img_h, battery_img, 1.0f);
-}
 
 static void ui_draw_sidebar_network_type(UIState *s) {
   static std::map<cereal::ThermalData::NetworkType, const char *> network_type_map = {
@@ -96,7 +80,6 @@ static void ui_draw_sidebar_network_type(UIState *s) {
   const int network_x = !s->scene.uilayout_sidebarcollapsed ? 50 : -(sbr_w);
   const int network_y = 303;
   const int network_w = 100;
-  const int network_h = 100;
   const char *network_type = network_type_map[s->scene.thermal.getNetworkType()];
   nvgFillColor(s->vg, COLOR_WHITE);
   nvgFontSize(s->vg, 48*fFontSize);
