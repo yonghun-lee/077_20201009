@@ -1,43 +1,44 @@
-const int HYUNDAI_MAX_STEER = 409;             // default 255
+const int HYUNDAI_MAX_STEER = 409;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
-const int HYUNDAI_MAX_RATE_UP = 5;             // default 3
-const int HYUNDAI_MAX_RATE_DOWN = 10;          // default 7
+const int HYUNDAI_MAX_RATE_UP = 5;
+const int HYUNDAI_MAX_RATE_DOWN = 10;
 const int HYUNDAI_DRIVER_TORQUE_ALLOWANCE = 50;
 const int HYUNDAI_DRIVER_TORQUE_FACTOR = 2;
 const int HYUNDAI_STANDSTILL_THRSLD = 30;  // ~1kph
 const CanMsg HYUNDAI_TX_MSGS[] = {
-  {832, 0, 8}, {832, 1, 8}, // LKAS11 Bus 0, 1
-  {1265, 0, 4}, {1265, 1, 4}, {1265, 2, 4}, // CLU11 Bus 0, 1, 2
-  //{1157, 0, 4}, // LFAHDA_MFC Bus 0
-  {593, 2, 8},  // MDPS12, Bus 2
+  {832, 0, 8},  // LKAS11 Bus 0
+  {1265, 0, 4}, // CLU11 Bus 0
+  {1157, 0, 4}, // LFAHDA_MFC Bus 0
+  {832, 1, 8},{1265, 1, 4}, {1265, 2, 4}, {593, 2, 8}, {1057, 0, 8}, {790, 1, 8}, {912, 0, 7}, {912,1, 7}, {1268, 0, 8}, {1268,1, 8},
   {1056, 0, 8}, //   SCC11,  Bus 0
   {1057, 0, 8}, //   SCC12,  Bus 0
   {1290, 0, 8}, //   SCC13,  Bus 0
-  //{905, 0, 8},  //   SCC14,  Bus 0
-  //{1186, 0, 8},  //   4a2SCC, Bus 0
-  //{790, 1, 8}, // EMS11, Bus 1
-  //{912, 0, 7}, {912,1, 7}, // SPAS11, Bus 0, 1
-  //{1268, 0, 8}, {1268,1, 8}, // SPAS12, Bus 0, 1
+  {905, 0, 8},  //   SCC14,  Bus 0
+  {1186, 0, 8}  //   4a2SCC, Bus 0
  };
 
 // TODO: missing checksum for wheel speeds message,worst failure case is
 //       wheel speeds stuck at 0 and we don't disengage on brake press
+// TODO: refactor addr check to cleanly re-enable commented out checks for cars that have them
 AddrCheckStruct hyundai_rx_checks[] = {
   //{.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U}}},
-  {.msg = {{902, 0, 8, .check_checksum = false, .max_counter = 15U, .expected_timestep = 10000U}}},
+  // TODO: older hyundai models don't populate the counter bits in 902
+  //{.msg = {{902, 0, 8, .max_counter = 15U,  .expected_timestep = 10000U}}},
+  //{.msg = {{902, 0, 8, .max_counter = 0U,  .expected_timestep = 10000U}}},
   //{.msg = {{916, 0, 8, .check_checksum = true, .max_counter = 7U, .expected_timestep = 10000U}}},
-  {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
+  //{.msg = {{916, 0, 8, .check_checksum = false, .max_counter = 0U, .expected_timestep = 10000U}}},
+ // {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
 };
 const int HYUNDAI_RX_CHECK_LEN = sizeof(hyundai_rx_checks) / sizeof(hyundai_rx_checks[0]);
 
 // older hyundai models have less checks due to missing counters and checksums
 AddrCheckStruct hyundai_legacy_rx_checks[] = {
-  //{.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U},
-  //         {881, 0, 8, .expected_timestep = 10000U}}},
-  {.msg = {{902, 0, 8, .expected_timestep = 20000U}}},
-  //{.msg = {{916, 0, 8, .expected_timestep = 20000U}}},
-  {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
+//  {.msg = {{608, 0, 8, .check_checksum = true, .max_counter = 3U, .expected_timestep = 10000U},
+//           {881, 0, 8, .expected_timestep = 10000U}}},
+//  {.msg = {{902, 0, 8, .expected_timestep = 10000U}}},
+//  {.msg = {{916, 0, 8, .expected_timestep = 10000U}}},
+//  {.msg = {{1057, 0, 8, .check_checksum = true, .max_counter = 15U, .expected_timestep = 20000U}}},
 };
 const int HYUNDAI_LEGACY_RX_CHECK_LEN = sizeof(hyundai_legacy_rx_checks) / sizeof(hyundai_legacy_rx_checks[0]);
 
@@ -53,34 +54,21 @@ int hyundai_mdps_bus = 0;
 bool hyundai_LCAN_on_bus1 = false;
 bool hyundai_forward_bus1 = false;
 
-static uint8_t hyundai_get_counter(CAN_FIFOMailBox_TypeDef *to_push) {
-  int addr = GET_ADDR(to_push);
-
-  uint8_t cnt;
-  if (addr == 902) {
-    cnt = ((GET_BYTE(to_push, 3) >> 6) << 2) | (GET_BYTE(to_push, 1) >> 6);
-  } else if (addr == 1057) {
-    cnt = GET_BYTE(to_push, 7) & 0xF;
-  } else {
-    cnt = 0;
-  }
-  return cnt;
-}
-
-static uint8_t hyundai_get_checksum(CAN_FIFOMailBox_TypeDef *to_push) {
-  int addr = GET_ADDR(to_push);
-
-  uint8_t chksum;
-  if (addr == 1057) {
-    chksum = GET_BYTE(to_push, 7) >> 4;
-  } else {
-    chksum = 0;
-  }
-  return chksum;
 
 static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
 
   bool valid;
+  if (0) {
+    valid = addr_safety_check(to_push, hyundai_legacy_rx_checks, HYUNDAI_LEGACY_RX_CHECK_LEN,
+                              NULL, NULL,
+                              NULL);
+
+  } else {
+    valid = addr_safety_check(to_push, hyundai_rx_checks, HYUNDAI_RX_CHECK_LEN,
+                              NULL, NULL,
+                              NULL);
+  }
+
   int addr = GET_ADDR(to_push);
   int bus = GET_BUS(to_push);
 
