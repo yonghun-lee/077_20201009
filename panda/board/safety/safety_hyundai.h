@@ -72,17 +72,6 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   int addr = GET_ADDR(to_push);
   int bus = GET_BUS(to_push);
 
-  if (0) {
-    valid = addr_safety_check(to_push, hyundai_legacy_rx_checks, HYUNDAI_LEGACY_RX_CHECK_LEN,
-                              hyundai_get_checksum, hyundai_compute_checksum,
-                              hyundai_get_counter);
-
-  } else {
-    valid = addr_safety_check(to_push, hyundai_rx_checks, HYUNDAI_RX_CHECK_LEN,
-                              hyundai_get_checksum, hyundai_compute_checksum,
-                              hyundai_get_counter);
-  }
-
   if (valid && ((bus == 0) || (bus == 1) || (bus == 2))) {
     // check if we have a LCAN on Bus1
     if ((bus == 1) && (addr == 1296 || addr == 524)) {
