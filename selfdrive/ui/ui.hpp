@@ -143,7 +143,6 @@ typedef struct UIScene {
   float lead_d_rel2, lead_y_rel2, lead_v_rel2;
 
   float face_prob;
-  bool is_rhd;
   float face_x, face_y;
 
   int front_box_x, front_box_y, front_box_width, front_box_height;
@@ -185,9 +184,6 @@ typedef struct UIScene {
   cereal::CarState::GearShifter  getGearShifter;  
 
 
-  int  engaged;
-  int lead_status;
-  float lead_d_rel, lead_y_rel, lead_v_rel;  
 
   struct _STATUS_
   {
