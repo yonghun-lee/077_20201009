@@ -35,7 +35,7 @@ class CarState(CarStateBase):
 
     self.driverAcc_time = 0
     kyd = kyd_conf()
-	self.steer_Angle_Correction = float(kyd.conf['steerAngleCorrection'])
+    self.steer_Angle_Correction = float(kyd.conf['steerAngleCorrection'])
 
     # BSM
     self.leftBlindspot_time = 0
