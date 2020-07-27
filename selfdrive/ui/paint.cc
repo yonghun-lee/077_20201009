@@ -793,8 +793,6 @@ static void ui_draw_vision_speedlimit(UIState *s) {
 static void ui_draw_debug(UIState *s) 
 {
   UIScene &scene = s->scene;
-  int ui_viz_rx = scene.ui_viz_rx;
-  int ui_viz_rw = scene.ui_viz_rw;
 
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 36*1.5*fFontSize);
