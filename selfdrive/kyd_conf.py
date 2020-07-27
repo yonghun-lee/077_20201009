@@ -9,6 +9,9 @@ class kyd_conf():
 
   def init_config(self, CP):
     write_conf = False
+    if self.conf['EnableLiveTune'] != "1":
+      self.conf['EnableLiveTune'] = str(1)
+      write_conf = True
 
     # only fetch Kp, Ki, Kf sR and sRC from interface.py if it's a PID controlled car
     if CP.lateralTuning.which() == 'pid':
@@ -20,6 +23,29 @@ class kyd_conf():
         write_conf = True
       if self.conf['Kf'] == "-1":
         self.conf['Kf'] = str('{:f}'.format(CP.lateralTuning.pid.kf))
+        write_conf = True
+    elif CP.lateralTuning.which() == 'indi':
+      if self.conf['outerLoopGain'] == "-1":
+        self.conf['outerLoopGain'] = str(round(CP.lateralTuning.indi.outerLoopGain,2))
+        write_conf = True
+      if self.conf['innerLoopGain'] == "-1":
+        self.conf['innerLoopGain'] = str(round(CP.lateralTuning.indi.innerLoopGain,2))
+        write_conf = True
+      if self.conf['timeConstant'] == "-1":
+        self.conf['timeConstant'] = str(round(CP.lateralTuning.indi.timeConstant,2))
+        write_conf = True
+      if self.conf['actuatorEffectiveness'] == "-1":
+        self.conf['actuatorEffectiveness'] = str(round(CP.lateralTuning.indi.actuatorEffectiveness,2))
+        write_conf = True
+    elif CP.lateralTuning.which() == 'lqr':
+      if self.conf['scale'] == "-1":
+        self.conf['scale'] = str(round(CP.lateralTuning.lqr.scale,2))
+        write_conf = True
+      if self.conf['ki'] == "-1":
+        self.conf['ki'] = str(round(CP.lateralTuning.lqr.ki,3))
+        write_conf = True
+      if self.conf['dc_gain'] == "-1":
+        self.conf['dc_gain'] = str('{:f}'.format(CP.lateralTuning.lqr.dcGain))
         write_conf = True
     
     if self.conf['steerRatio'] == "-1":
@@ -39,6 +65,10 @@ class kyd_conf():
     if os.path.isfile('/data/kyd.json'):
       with open('/data/kyd.json', 'r') as f:
         self.config = json.load(f)
+        
+      if "EnableLiveTune" not in self.config:
+        self.config.update({"EnableLiveTune":"1"})
+        self.element_updated = True
 
       if "steerMax" not in self.config:
         self.config.update({"steerMax":"255"})
@@ -75,14 +105,31 @@ class kyd_conf():
         self.config.update({"sR_BP1":"0"})
         self.config.update({"sR_time":"0.1"})
         self.element_updated = True
+        
+      if "outerLoopGain" not in self.config:
+        self.config.update({"outerLoopGain":"-1"})
+        self.config.update({"innerLoopGain":"-1"})
+        self.config.update({"timeConstant":"-1"})
+        self.config.update({"actuatorEffectiveness":"-1"})
+        self.element_updated = True
+
+      if "scale" not in self.config:
+        self.config.update({"scale":"-1"})
+        self.config.update({"ki":"-1"})
+        self.config.update({"dc_gain":"-1"})
+        self.element_updated = True
 
       if self.element_updated:
         print("updated")
         self.write_config(self.config)
 
     else:
-      self.config = {"steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
-      	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", "Kp":"-1", "Ki":"-1", "Kf":"-1", \
+      self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
+      				 "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
+      	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", \
+      	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
+      	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
+                     "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 
