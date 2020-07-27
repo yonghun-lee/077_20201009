@@ -3,10 +3,13 @@ from selfdrive.controls.lib.drive_helpers import get_steer_max
 from common.numpy_fast import clip
 from common.realtime import DT_CTRL
 from cereal import log
-
+from selfdrive.kyd_conf import kyd_conf
 
 class LatControlLQR():
   def __init__(self, CP):
+    self.kyd = kyd_conf(CP)
+    self.mpc_frame = 0
+
     self.scale = CP.lateralTuning.lqr.scale
     self.ki = CP.lateralTuning.lqr.ki
 
@@ -31,6 +34,22 @@ class LatControlLQR():
     self.output_steer = 0.0
     self.sat_count = 0.0
 
+  def live_tune(self, CP):
+    self.mpc_frame += 1
+    if self.mpc_frame % 300 == 0:
+      # live tuning through /data/openpilot/tune.py overrides interface.py settings
+      self.kyd = kyd_conf()
+      if self.kyd.conf['EnableLiveTune'] == "1":
+        self.scale_ = float(self.kyd.conf['scale'])
+        self.ki_ = float(self.kyd.conf['ki'])
+        self.dc_gain_ = float(self.kyd.conf['dc_gain'])
+
+        self.scale = self.scale_
+        self.ki = self.ki_
+        self.dc_gain = self.dc_gain_
+        
+      self.mpc_frame = 0
+
   def _check_saturation(self, control, check_saturation, limit):
     saturated = abs(control) == limit
 
@@ -44,6 +63,9 @@ class LatControlLQR():
     return self.sat_count > self.sat_limit
 
   def update(self, active, CS, CP, path_plan):
+
+    self.live_tune(CP)
+
     lqr_log = log.ControlsState.LateralLQRState.new_message()
 
     steers_max = get_steer_max(CP, CS.vEgo)
