@@ -796,14 +796,6 @@ static void ui_draw_debug(UIState *s)
   int ui_viz_rx = scene.ui_viz_rx;
   int ui_viz_rw = scene.ui_viz_rw;
 
-  char str_msg[512];
-
-  const int viz_speed_w = 280;
-  const int viz_speed_x = ui_viz_rx+((ui_viz_rw/2)-(viz_speed_w/2));
-
-  int  y_pos = 0;
-  int  x_pos = 0;
-
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 36*1.5*fFontSize);
 
@@ -811,7 +803,6 @@ static void ui_draw_debug(UIState *s)
   ui_print( s, 0, 1078, "%s", scene.alert.text2 );
 
 }
-
 
 static void ui_draw_vision_speed(UIState *s) {
   const UIScene *scene = &s->scene;
