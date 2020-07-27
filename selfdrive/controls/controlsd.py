@@ -152,6 +152,8 @@ class Controls:
     self.rk = Ratekeeper(100, print_delay_threshold=None)
     self.prof = Profiler(False)  # off by default
 
+    self.hyundai_lkas = self.read_only  #read_only
+
   def update_events(self, CS):
     """Compute carEvents from carState"""
 
