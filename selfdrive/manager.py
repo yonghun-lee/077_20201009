@@ -192,7 +192,8 @@ managed_processes = {
   "updated": "selfdrive.updated",
   "dmonitoringmodeld": ("selfdrive/modeld", ["./dmonitoringmodeld"]),
   "modeld": ("selfdrive/modeld", ["./modeld"]),
-  #"driverview": "selfdrive.monitoring.driverview",
+  "driverview": "selfdrive.monitoring.driverview",
+  "appd": "selfdrive.kyd.appd.appd",  
 }
 
 daemon_processes = {
@@ -210,7 +211,7 @@ unkillable_processes = ['camerad']
 interrupt_processes: List[str] = []
 
 # processes to end with SIGKILL instead of SIGTERM
-kill_processes = ['sensord']
+kill_processes = ['sensord', 'paramsd']
 
 # processes to end if thermal conditions exceed Green parameters
 green_temp_processes = ['uploader']
@@ -228,6 +229,7 @@ if ANDROID:
     'tombstoned',
     'updated',
     'deleter',
+    'appd',
   ]
 
 car_started_processes = [
@@ -434,8 +436,16 @@ def manager_thread():
 
   params = Params()
 
+  EnableDriverMonitoring = int(params.get('OpkrEnableDriverMonitoring')) 
+  EnableLogger = int(params.get('OpkrEnableLogger')) 
+
+  if not EnableDriverMonitoring:
+    car_started_processes.remove( 'dmonitoringd' )
+    car_started_processes.remove( 'dmonitoringmodeld' )
+    
 
   EnableLogger = (params.get("RecordFront") != b"0")
+
 
   if not EnableLogger:
     car_started_processes.remove( 'loggerd' )
@@ -499,8 +509,7 @@ def manager_thread():
         kill_managed_process(p)
       # this is ugly
       if "driverview" not in running and params.get("IsDriverViewEnabled") == b"1":
-        pass
-        #start_managed_process("driverview")
+      	start_managed_process("driverview")
       elif "driverview" in running and params.get("IsDriverViewEnabled") == b"0":
         kill_managed_process("driverview")
 
@@ -563,6 +572,24 @@ def main():
     ("OpenpilotEnabledToggle", "1"),
     ("LaneChangeEnabled", "1"),
     ("IsDriverViewEnabled", "0"),
+    ("IsOpenpilotViewEnabled", "0"),
+    ("OpkrAutoShutdown", "0"),
+    ("OpkrAutoScreenOff", "0"),
+    ("OpkrUIBrightness", "0"),
+    ("OpkrEnableDriverMonitoring", "1"),
+    ("OpkrEnableLogger", "0"),
+    ("OpkrEnableGetoffAlert", "1"),
+    ("OpkrEnableLearner", "0"),
+    ("OpkrAutoResume", "1"),
+    ("OpkrAccelProfile", "0"),
+    ("OpkrAutoLanechangedelay", "0"),
+    ("OpkrRunMixplorer", "0"),
+    ("OpkrRunQuickedit", "0"),
+    ("OpkrRunSoftkey", "0"),
+    ("OpkrRunNavigation", "0"),
+    ("OpkrBootNavigation", "0"),
+    ("FingerprintIssuedFix", "0"),
+    ("LdwsCarFix", "0"),
   ]
 
   # set unset params

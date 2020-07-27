@@ -126,6 +126,8 @@ class Controls:
     self.distance_traveled = 0
     self.events_prev = []
     self.current_alert_types = [ET.PERMANENT]
+    self.controlsAllowed = 0
+    self.timer_allowed = 0
 
     self.sm['liveCalibration'].calStatus = Calibration.INVALID
     self.sm['thermal'].freeSpace = 1.
@@ -194,7 +196,7 @@ class Controls:
         else:
           self.events.add(EventName.preLaneChangeRight)
     elif self.sm['pathPlan'].laneChangeState in [LaneChangeState.laneChangeStarting,
-                                        LaneChangeState.laneChangeFinishing]:
+                                        LaneChangeState.laneChangeFinishing, LaneChangeState.laneChangeDone]:
       self.events.add(EventName.laneChange)
 
     #print( 'can rcv error ={}, canvalid={} frame={} '.format( self.can_rcv_error,  CS.canValid, self.sm.frame ) )
@@ -260,14 +262,8 @@ class Controls:
     # Therefore we allow a mismatch for two samples, then we trigger the disengagement.
     if not self.enabled:
       self.mismatch_counter = 0
-
-    controlsAllowed = self.sm['health'].controlsAllowed
-    if not controlsAllowed and self.enabled:
+    elif not self.sm['health'].controlsAllowed:
       self.mismatch_counter += 1
-
-    #print( 'controlsAllowed={} self.mismatch_counter={}'.format( controlsAllowed, self.mismatch_counter ) )
-  
-    self.distance_traveled += CS.vEgo * DT_CTRL
 
     return CS
 
@@ -323,8 +319,7 @@ class Controls:
         elif self.state == State.preEnabled:
           if not self.events.any(ET.PRE_ENABLE):
             self.state = State.enabled
-          else:
-            self.current_alert_types.append(ET.PRE_ENABLE)
+
 
     # DISABLED
     elif self.state == State.disabled:
@@ -347,6 +342,14 @@ class Controls:
 
     # Check if openpilot is engaged
     self.enabled = self.active or self.state == State.preEnabled
+
+    if not self.controlsAllowed:
+      self.timer_allowed = 0
+    elif self.enabled != self.controlsAllowed:
+      self.timer_allowed += 1
+      if CS.vEgo > 15*CV.KPH_TO_MS and CS.gearShifter == 2 and self.timer_allowed > 10:
+        self.state = State.enabled
+
 
   def state_control(self, CS):
     """Given the state, this function returns an actuators packet"""
@@ -402,6 +405,13 @@ class Controls:
   def publish_logs(self, CS, start_time, actuators, v_acc, a_acc, lac_log):
     """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
     global trace1
+
+    log_alertTextMsg1 = trace1.global_alertTextMsg1
+    log_alertTextMsg2 = trace1.global_alertTextMsg2
+
+    self.controlsAllowed = self.sm['health'].controlsAllowed
+    log_alertTextMsg1 += ' ctrl={}'.format( self.controlsAllowed )
+
     
     CC = car.CarControl.new_message()
     CC.enabled = self.enabled
@@ -449,9 +459,9 @@ class Controls:
     self.AM.process_alerts(self.sm.frame)
     CC.hudControl.visualAlert = self.AM.visual_alert
 
-    if not self.read_only:
+    if not self.hyundai_lkas and self.enabled:
       # send car controls over can
-      can_sends = self.CI.apply(CC)
+      can_sends = self.CI.apply(CC, self.sm, self.CP )
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['dMonitoringState'].awarenessStatus < 0.) or \
@@ -528,7 +538,8 @@ class Controls:
     self.events_prev = self.events.names.copy()
 
     # carParams - logged every 50 seconds (> 1 per segment)
-    if (self.sm.frame % int(50. / DT_CTRL) == 0):
+    if self.init_flag or (self.sm.frame % int(50. / DT_CTRL) == 0):
+      self.init_flag = False 
       cp_send = messaging.new_message('carParams')
       cp_send.carParams = self.CP
       self.pm.send('carParams', cp_send)
@@ -550,9 +561,17 @@ class Controls:
     CS = self.data_sample()
     self.prof.checkpoint("Sample")
 
+
+    if self.read_only:
+      self.hyundai_lkas = self.read_only
+    elif CS.cruiseState.enabled and self.hyundai_lkas:
+      self.CP = CarInterface.live_tune( self.CP, True )      
+      self.hyundai_lkas = False
+      self.init_flag = 1
+
     self.update_events(CS)
 
-    if not self.read_only:
+    if not self.hyundai_lkas:
       # Update control state
       self.state_transition(CS)
       self.prof.checkpoint("State transition")
@@ -565,6 +584,11 @@ class Controls:
     # Publish data
     self.publish_logs(CS, start_time, actuators, v_acc, a_acc, lac_log)
     self.prof.checkpoint("Sent")
+
+
+    if not CS.cruiseState.enabled and not self.hyundai_lkas:
+      self.hyundai_lkas = True
+
 
   def controlsd_thread(self):
     while True:

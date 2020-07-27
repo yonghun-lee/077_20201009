@@ -1,8 +1,11 @@
 from cereal import car
-from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES, EV_HYBRID
+from selfdrive.car.hyundai.values import DBC, STEER_THRESHOLD, FEATURES, CAR, EV_HYBRID
 from selfdrive.car.interfaces import CarStateBase
 from opendbc.can.parser import CANParser
 from selfdrive.config import Conversions as CV
+from selfdrive.car.hyundai.spdcontroller  import SpdController
+from selfdrive.car.hyundai.values import Buttons
+from selfdrive.kyd_conf import kyd_conf
 
 GearShifter = car.CarState.GearShifter
 
@@ -23,8 +26,12 @@ class CarState(CarStateBase):
     self.lkas_button_on = False
     self.lkas_error = False    
 
+    self.prev_cruise_main_button = False
+    self.prev_cruise_buttons = False
+
     self.main_on = False
     self.acc_active = False
+    self.cruiseState_modeSel = 0
 
     self.driverAcc_time = 0
 
@@ -38,11 +45,15 @@ class CarState(CarStateBase):
     self.TSigLHSw = 0
     self.TSigRHSw = 0
 
+    self.SC = SpdController()
 
   def update(self, cp, cp2, cp_cam):
     cp_mdps = cp2 if self.mdps_bus else cp
     cp_sas = cp2 if self.sas_bus else cp
     cp_scc = cp2 if self.scc_bus == 1 else cp_cam if self.scc_bus == 2 else cp
+
+    self.prev_cruise_main_button = self.cruise_main_button
+    self.prev_cruise_buttons = self.cruise_buttons
 
     ret = car.CarState.new_message()
 
@@ -62,7 +73,8 @@ class CarState(CarStateBase):
 
     ret.standstill = ret.vEgoRaw < 0.1
 
-    ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle']
+  	kyd = kyd_conf()
+    ret.steeringAngle = cp_sas.vl["SAS11"]['SAS_Angle'] - float(kyd.conf['steerAngleCorrection'])
     ret.steeringRate = cp_sas.vl["SAS11"]['SAS_Speed']
     ret.yawRate = cp.vl["ESP12"]['YAW_RATE']
     ret.steeringTorque = cp_mdps.vl["MDPS12"]['CR_Mdps_StrColTq']
@@ -79,7 +91,7 @@ class CarState(CarStateBase):
     self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0)    # 1057
     self.update_atom( cp, cp2, cp_cam )
 
-    ret.cruiseState.available = self.main_on
+    ret.cruiseState.available = self.main_on and self.cruiseState_modeSel != 3
     ret.cruiseState.enabled =  ret.cruiseState.available
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4.
     

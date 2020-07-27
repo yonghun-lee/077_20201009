@@ -297,6 +297,7 @@ struct ThermalData {
 
   memUsedPercent @19 :Int8;
   cpuPerc @20 :Int8;
+  ipAddr @25 :Text;
 
   enum ThermalStatus {
     green @0;   # all processes run
@@ -820,6 +821,7 @@ struct PathPlan {
     preLaneChange @1;
     laneChangeStarting @2;
     laneChangeFinishing @3;
+    laneChangeDone @4;
   }
 
   enum LaneChangeDirection {

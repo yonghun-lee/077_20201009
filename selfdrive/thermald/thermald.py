@@ -19,6 +19,8 @@ from selfdrive.loggerd.config import get_available_percent
 from selfdrive.pandad import get_expected_signature
 from selfdrive.thermald.power_monitoring import PowerMonitoring, get_battery_capacity, get_battery_status, \
                                                 get_battery_current, get_battery_voltage, get_usb_present
+import re
+import subprocess
 
 FW_SIGNATURE = get_expected_signature()
 
@@ -34,6 +36,7 @@ DISCONNECT_TIMEOUT = 5.  # wait 5 seconds before going offroad after disconnect 
 LEON = False
 last_eon_fan_val = None
 
+mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
 
 with open(BASEDIR + "/selfdrive/controls/lib/alerts_offroad.json") as json_file:
   OFFROAD_ALERTS = json.load(json_file)
@@ -151,7 +154,7 @@ def handle_fan_uno(max_cpu_temp, bat_temp, fan_speed, ignition):
 
 def thermald_thread():
   # prevent LEECO from undervoltage
-  BATT_PERC_OFF = 100 #if LEON else 3
+  BATT_PERC_OFF = 100 #10 if LEON else 3
 
   health_timeout = int(1000 * 2.5 * DT_TRML)  # 2.5x the expected health frequency
 
@@ -192,7 +195,25 @@ def thermald_thread():
 
   IsOpenpilotViewEnabled = 0
 
+  do_uninstall = 0
+  accepted_terms = 0
+  completed_training = 0
+  panda_signature = 0
+
+  ts_last_ip = 0
+  ip_addr = '255.255.255.255'
+
+  # sound trigger
+  sound_trigger = 1
+
+  env = dict(os.environ)
+  env['LD_LIBRARY_PATH'] = mediaplayer
+
+  getoff_alert = Params().get('OpkrEnableGetoffAlert') == b'1'
+  OpkrAutoShutdown = params.get_OpkrAutoShutdown()
+
   while 1:
+    ts = sec_since_boot()
     health = messaging.recv_sock(health_sock, wait=True)
     location = messaging.recv_sock(location_sock)
     location = location.gpsLocation if location else None
@@ -232,8 +253,9 @@ def thermald_thread():
           params.panda_disconnect()
       health_prev = health
     elif ignition == False or IsOpenpilotViewEnabled:
-      IsOpenpilotViewEnabled = int( params.get("IsDriverViewEnabled") )      
-      ignition = IsOpenpilotViewEnabled      
+      IsOpenpilotViewEnabled = int( params.get("IsOpenpilotViewEnabled") )      
+      ignition = IsOpenpilotViewEnabled
+
 
 
     # get_network_type is an expensive call. update every 10s
@@ -259,6 +281,17 @@ def thermald_thread():
     if is_uno:
       msg.thermal.batteryPercent = 100
       msg.thermal.batteryStatus = "Charging"
+
+    # update ip every 10 seconds
+    ts = sec_since_boot()
+    if ts - ts_last_ip >= 10.:
+      try:
+        result = subprocess.check_output(["ifconfig", "wlan0"], encoding='utf8')  # pylint: disable=unexpected-keyword-arg
+        ip_addr = re.findall(r"inet addr:((\d+\.){3}\d+)", result)[0][0]
+      except:
+        ip_addr = 'N/A'
+      ts_last_ip = ts
+    msg.thermal.ipAddr = ip_addr
 
     current_filter.update(msg.thermal.batteryCurrent / 1e6)
 
@@ -363,10 +396,10 @@ def thermald_thread():
     should_start = should_start and time_valid
 
     # don't start while taking snapshot
-    #if not should_start_prev:
-    #  is_viewing_driver = params.get("IsDriverViewEnabled") == b"1"
-    #  is_taking_snapshot = params.get("IsTakingSnapshot") == b"1"
-    #  should_start = should_start and (not is_taking_snapshot) and (not is_viewing_driver)
+    if not should_start_prev:
+      is_viewing_driver = params.get("IsDriverViewEnabled") == b"1"
+      is_taking_snapshot = params.get("IsTakingSnapshot") == b"1"
+      should_start = should_start and (not is_taking_snapshot) and (not is_viewing_driver)
 
     if fw_version_match and not fw_version_match_prev:
       params.delete("Offroad_PandaFirmwareMismatch")
@@ -401,14 +434,18 @@ def thermald_thread():
         off_ts = sec_since_boot()
         os.system('echo powersave > /sys/class/devfreq/soc:qcom,cpubw/governor')
 
+      if sound_trigger == 1 and msg.thermal.batteryStatus == "Discharging" and started_seen and (sec_since_boot() - off_ts) > 1 and getoff_alert:
+        subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/eondetach.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
+        sound_trigger = 0
+
       # shutdown if the battery gets lower than 3%, it's discharging, we aren't running for
       # more than a minute but we were running
-      if msg.thermal.batteryPercent < BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
-         started_seen and (sec_since_boot() - off_ts) > 60:
+      if msg.thermal.batteryPercent <= BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
+         started_seen and OpkrAutoShutdown and (sec_since_boot() - off_ts) > OpkrAutoShutdown:
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
     # Offroad power monitoring
-    pm.calculate(health)
+    pm.calculate(health, msg)
     msg.thermal.offroadPowerUsage = pm.get_power_used()
 
     msg.thermal.chargingError = current_filter.x > 0. and msg.thermal.batteryPercent < 90  # if current is positive, then battery is being discharged
@@ -427,6 +464,9 @@ def thermald_thread():
     usb_power_prev = usb_power
     fw_version_match_prev = fw_version_match
     should_start_prev = should_start
+
+    if usb_power:
+      pm.charging_ctrl( msg, ts, 80, 70 )
 
     # report to server once per minute
     if (count % int(60. / DT_TRML)) == 0:
