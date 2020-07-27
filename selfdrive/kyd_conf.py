@@ -40,8 +40,21 @@ class kyd_conf():
       with open('/data/kyd.json', 'r') as f:
         self.config = json.load(f)
 
+      if "steerMax" not in self.config:
+        self.config.update({"steerMax":"255"})
+        self.config.update({"steerDeltaUp":"3"})
+        self.config.update({"steerDeltaDown":"7"})
+        self.config.update({"steerDriverAllowance":"50"})
+        self.config.update({"steerDriverMultiplier":"2"})
+        self.config.update({"steerDriverFactor":"1"})
+        self.element_updated = True
+
       if "cameraOffset" not in self.config:
         self.config.update({"cameraOffset":"0.06"})
+        self.element_updated = True
+        
+      if "steerAngleCorrection" not in self.config:
+        self.config.update({"steerAngleCorrection":"0.0"})
         self.element_updated = True
 
       if "Kp" not in self.config:
@@ -68,7 +81,8 @@ class kyd_conf():
         self.write_config(self.config)
 
     else:
-      self.config = {"cameraOffset":"0.06", "Kp":"-1", "Ki":"-1", "Kf":"-1", \
+      self.config = {"steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
+      	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", "Kp":"-1", "Ki":"-1", "Kf":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 

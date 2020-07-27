@@ -14,7 +14,7 @@ class SteerLimitParams:
   STEER_DELTA_UP = int(kyd.conf['steerDeltaUp'])  # 3
   STEER_DELTA_DOWN = int(kyd.conf['steerDeltaDown'])  # 7
   STEER_DRIVER_ALLOWANCE = int(kyd.conf['steerDriverAllowance'])  # 50
-  STEER_DRIVER_MULTIPLIER = int(kyd.conf['steerDriverAllowance'])  # 2
+  STEER_DRIVER_MULTIPLIER = int(kyd.conf['steerDriverMultiplier'])  # 2
   STEER_DRIVER_FACTOR = int(kyd.conf['steerDriverFactor'])  # 1
 
 
