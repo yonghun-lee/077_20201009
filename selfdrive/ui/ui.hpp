@@ -139,9 +139,6 @@ typedef struct UIScene {
   uint32_t maxBatTemp;
   float angleSteers;  
   float angleSteersDes;  
-  
-  bool brakePress;
-  bool  brakeLights;
 
   int  engaged;
   int lead_status;

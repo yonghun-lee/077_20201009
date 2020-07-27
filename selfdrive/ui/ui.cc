@@ -421,12 +421,6 @@ void handle_message(UIState *s, SubMaster &sm) {
     s->preview_started = data.getIsPreview();
   }
 
-  if (sm.updated("carState")) {
-    auto data = sm["carState"].getCarState();
-    scene.brakePress = data.getBrakePressed();
-    scene.brakeLights = data.getBrakeLights();
-  }
-
   s->started = scene.thermal.getStarted() || s->preview_started;
   // Handle onroad/offroad transition
   if (!s->started) {
