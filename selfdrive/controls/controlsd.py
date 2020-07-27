@@ -153,6 +153,7 @@ class Controls:
     self.prof = Profiler(False)  # off by default
 
     self.hyundai_lkas = self.read_only  #read_only
+    self.init_flag = True
 
   def update_events(self, CS):
     """Compute carEvents from carState"""
