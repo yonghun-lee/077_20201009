@@ -189,7 +189,7 @@ class CarController():
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
-	if not run_speed_ctrl:
+    if not run_speed_ctrl:
       str_log2 = 'U={:.0f}  LK={:.0f} steer={:5.0f} '.format( CS.out.steerWarning, CS.lkas_button_on, CS.out.steeringTorque  )
       trace1.printf2( '{}'.format( str_log2 ) )
 

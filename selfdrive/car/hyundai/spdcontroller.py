@@ -238,8 +238,8 @@ class SpdController():
         raise NotImplementedError
 
     def update_log(self, CS, set_speed, target_set_speed, long_wait_cmd ):
-        str3 = 'SET={:3.0f} DST={:3.0f} VSD={:.0f} DA={:.0f}/{:.0f}/{:.0f} DG={} DO={:.0f}'.format(
-            set_speed, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, CS.driverOverride )
+        str3 = 'M={:3.0f} DST={:3.0f} VSD={:.0f} DA={:.0f}/{:.0f}/{:.0f} DG={} DO={:.0f}'.format(
+            CS.out.cruiseState.modeSel, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, CS.driverOverride )
         str4 = ' CS={:.1f}/{:.1f} '.format(  CS.lead_distance, CS.lead_objspd )
         str5 = str3 +  str4
         trace1.printf2( str5 )
