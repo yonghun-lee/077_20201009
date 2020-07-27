@@ -32,7 +32,6 @@ const uint8_t alert_colors[][4] = {
 };
 
 float  fFontSize = 0.8;
-extern  int  is_awake_command;
 
 
 static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
@@ -811,70 +810,6 @@ static void ui_draw_debug(UIState *s)
   ui_print( s, 0, 1020, "%s", scene.alert.text1 );
   ui_print( s, 0, 1078, "%s", scene.alert.text2 );
 
-
-  if( scene.params.nOpkrAccelProfile == 0 )  return;
-  NVGcolor nColor = COLOR_WHITE;
-  x_pos = viz_speed_x + 320;
-  y_pos = 120;
-
-  nvgFontSize(s->vg, 30);
-  switch( scene.params.nOpkrAccelProfile  )
-  {
-    case 1: strcpy( str_msg, "1.느림" ); nColor = nvgRGBA(100, 100, 255, 255); break;
-    case 2: strcpy( str_msg, "2.보통" );    nColor = COLOR_WHITE;  break;
-    case 3: strcpy( str_msg, "3.빠름" );  nColor = nvgRGBA(255, 100, 100, 255);  break;
-    default :  sprintf( str_msg, "%d", scene.params.nOpkrAccelProfile ); nColor = COLOR_WHITE;  break;
-  }
-  nvgFillColor(s->vg, nColor);
-  ui_print( s, x_pos+50, y_pos+0, "%s", str_msg );
-
-  nvgFontSize(s->vg, 70);
-  switch( scene.cruiseState.modeSel  )
-  {
-    case 0: strcpy( str_msg, "주행모드: 오파" ); nColor = COLOR_WHITE; break;
-    case 1: strcpy( str_msg, "주행모드: 커브" ); nColor = nvgRGBA(200, 200, 255, 255);  break;
-    case 2: strcpy( str_msg, "주행모드: 차간" ); nColor = nvgRGBA(200, 255, 255, 255);  break;
-    case 3: strcpy( str_msg, "주행모드: 순정" ); nColor = nvgRGBA(200, 255, 255, 255);  break;
-    default :  sprintf( str_msg, "%d", scene.cruiseState.modeSel ); nColor = COLOR_WHITE;  break;
-  }
-  nvgFillColor(s->vg, nColor);  
-  ui_print( s, x_pos, y_pos+80, str_msg );  
-}
-
-
-/*
-  park @1;
-  drive @2;
-  neutral @3;
-  reverse @4;
-  sport @5;
-  low @6;
-  brake @7;
-  eco @8;
-*/
-static void ui_draw_gear( UIState *s )
-{
-  UIScene &scene = s->scene;  
-  NVGcolor nColor = COLOR_WHITE;
-
-  int  ngetGearShifter = int(scene.getGearShifter);
-  int  x_pos = 1700;
-  int  y_pos = 200;
-  char str_msg[512];
-
-  nvgFontSize(s->vg, 150 );
-  switch( ngetGearShifter )
-  {
-    case 1 : strcpy( str_msg, "P" ); nColor = nvgRGBA(200, 200, 255, 255); break;
-    case 2 : strcpy( str_msg, "D" ); nColor = nvgRGBA(200, 200, 255, 255); break;
-    case 3 : strcpy( str_msg, "N" ); nColor = COLOR_WHITE; break;
-    case 4 : strcpy( str_msg, "R" ); nColor = COLOR_RED; break;
-    case 7 : strcpy( str_msg, "B" ); break;
-    default: sprintf( str_msg, "%d", ngetGearShifter ); break;
-  }
-
-  nvgFillColor(s->vg, nColor);
-  ui_print( s, x_pos, y_pos, str_msg );
 }
 
 
@@ -931,10 +866,6 @@ static void ui_draw_vision_event(UIState *s) {
       float angleSteers = s->scene.controls_state.getAngleSteers();
       ui_draw_circle_image(s->vg, bg_wheel_x, bg_wheel_y, bg_wheel_size, s->img_wheel, color, 1.0f, angleSteers );// bg_wheel_y - 25);
     }
-    else
-    {
-      ui_draw_gear( s );
-	}
   }
 }
 

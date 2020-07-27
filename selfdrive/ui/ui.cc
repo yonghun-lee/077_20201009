@@ -16,7 +16,6 @@
 #include "common/params.h"
 #include "common/utilpp.h"
 #include "ui.hpp"
-#include "dashcam.h"
 
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
@@ -398,7 +397,6 @@ void handle_message(UIState *s, SubMaster &sm) {
 #endif
   if (sm.updated("thermal")) {
     scene.thermal = sm["thermal"].getThermal();
-    scene.ipAddr = data.getIpAddr();
 
 
     scene.maxBatTemp = scene.thermal.getBat();
@@ -427,7 +425,6 @@ void handle_message(UIState *s, SubMaster &sm) {
     auto data = sm["carState"].getCarState();
     scene.brakePress = data.getBrakePressed();
     scene.brakeLights = data.getBrakeLights();
-    scene.getGearShifter = data.getGearShifter();
   }
 
   s->started = scene.thermal.getStarted() || s->preview_started;
@@ -840,13 +837,6 @@ int main(int argc, char* argv[]) {
     if (!s->started) {
       // always process events offroad
       check_messages(s);
-    } else {
-      static int modelSel;
-
-      if( modelSel != scene.cruiseState.modeSel )
-      {
-        modelSel = scene.cruiseState.modeSel;
-      }
 
       if (s->started) {
         s->controls_timeout = 5 * UI_FREQ;
@@ -885,7 +875,6 @@ int main(int argc, char* argv[]) {
 
     // Don't waste resources on drawing in case screen is off
     if (s->awake) {
-      dashcam(s, touch_x, touch_y);        
       ui_draw(s);
       glFinish();
       should_swap = true;

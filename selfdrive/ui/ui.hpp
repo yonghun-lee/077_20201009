@@ -145,8 +145,6 @@ typedef struct UIScene {
   bool brakePress;
   bool  brakeLights;
 
-  cereal::CarState::GearShifter  getGearShifter;  
-
   int  engaged;
   int lead_status;
   float lead_d_rel, lead_y_rel, lead_v_rel;  
@@ -156,22 +154,6 @@ typedef struct UIScene {
       char text1[512];
       char text2[512];
   } alert;
-  
-  struct _CRUISE_STATE
-  {
-    bool standstill;
-    int  modeSel;
-  } cruiseState;
-
-  struct  _PARAMS
-  {
-    int nOpkrAutoScreenOff;
-    int nOpkrAccelProfile;
-    int nOpkrUIBrightness;
-    int nOpkrUIVolumeBoost;
-    int nOpkrAutoLanechangedelay;
-  } params;
-
 } UIScene;
 
 typedef struct {
