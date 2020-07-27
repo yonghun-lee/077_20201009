@@ -132,6 +132,23 @@ typedef struct UIScene {
   cereal::RadarState::LeadData::Reader lead_data[2];
   cereal::ControlsState::Reader controls_state;
   cereal::DriverState::Reader driver_state;
+
+
+  // dev ui
+  uint16_t maxCpuTemp;
+  uint32_t maxBatTemp;
+  float angleSteers;  
+  float angleSteersDes;  
+
+  int  engaged;
+  int lead_status;
+  float lead_d_rel, lead_y_rel, lead_v_rel;  
+
+  struct _STATUS_
+  {
+      char text1[512];
+      char text2[512];
+  } alert;
 } UIScene;
 
 typedef struct {

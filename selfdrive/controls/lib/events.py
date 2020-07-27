@@ -219,7 +219,7 @@ EVENTS = {
       "Be ready to take over at any time",
       "Always keep hands on wheel and eyes on road",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 15.),
+      Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., 5.),
   },
 
   EventName.startupWhitePanda: {
@@ -710,7 +710,7 @@ EVENTS = {
   },
 
   EventName.reverseGear: {
-    ET.IMMEDIATE_DISABLE: ImmediateDisableAlert("Reverse Gear"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
     ET.NO_ENTRY: NoEntryAlert("Reverse Gear"),
   },
 
