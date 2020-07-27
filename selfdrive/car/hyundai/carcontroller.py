@@ -140,9 +140,6 @@ class CarController():
       self.model_speed = self.model_sum = 0
 
     # Steering Torque
-    param = self.steerParams_torque( CS, abs_angle_steers, path_plan, CC)
-
-    # Steering Torque
     new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
