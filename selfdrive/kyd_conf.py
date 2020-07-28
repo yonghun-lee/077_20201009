@@ -131,7 +131,7 @@ class kyd_conf():
 
     else:
       self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
-      				       "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
+      		     "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
       	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", \
       	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
