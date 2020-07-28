@@ -72,6 +72,7 @@ while True:
 #  print ("0 / L to make the value 0 / 1")
   print ("SPACE: next   m: prev")
   print ("z: quit")
+  print ("p: reboot")
 
   char  = getch()
   write_json = False
@@ -142,6 +143,15 @@ while True:
       j = j - 1
     else:
       j = len(param) - 1
+
+  elif (char == "p"):
+    print ("")
+    print ("system will reboot. continue?(y/n)")
+    char2 = getch()
+    if (char2 == "y"):
+      os.system('LD_LIBRARY_PATH="" svc power reboot')
+    else:
+      process.kill()
 
   elif (char == "z"):
     process.kill()
