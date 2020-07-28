@@ -98,6 +98,12 @@ class kyd_conf():
         self.config.update({"steerRateCost":"-1"})
         self.config.update({"deadzone":"0.0"})
         self.element_updated = True
+
+      if "tireStiffnessFactor" not in self.config:
+        self.config.update({"tireStiffnessFactor":"1."})
+        self.config.update({"steerActuatorDelay":"0.3"})
+        self.config.update({"steerLimitTimer":"0.4"})
+        self.element_updated = True
 	
       if "sR_boost" not in self.config:
         self.config.update({"sR_boost":"0"})
@@ -125,12 +131,13 @@ class kyd_conf():
 
     else:
       self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
-      				 "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
+      				       "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
       	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", \
       	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
+                     "tireStiffnessFactor":"1.", "steerActuatorDelay":"0.3", "steerLimitTimer":"0.4", \  
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 
 

@@ -7,8 +7,6 @@ from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 from common.params import Params
 from selfdrive.kyd_conf import kyd_conf
 
-params = Params()
-kyd = kyd_conf()
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
@@ -17,6 +15,8 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState )
     self.cp2 = self.CS.get_can2_parser(CP)
+    self.kyd = kyd_conf()
+    self.params = Params()
     
   @staticmethod
   def compute_gb(accel, speed):
@@ -52,14 +52,14 @@ class CarInterface(CarInterfaceBase):
     """ LQR EXAMPLE: 각줄에 pid가 들어간 항목만 코멘트(#)처리 하시고 lqr 관련 설정을 넣어주시면 됩니다.
                      아래 - 수정예시
       ret.lateralTuning.init('lqr')
-	  ret.lateralTuning.lqr.scale = 2000.0
-	  ret.lateralTuning.lqr.ki = 0.01
-	  ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-	  ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-	  ret.lateralTuning.lqr.c = [1., 0.]
-	  ret.lateralTuning.lqr.k = [-100., 450.]
-	  ret.lateralTuning.lqr.l = [0.22, 0.318]
-	  ret.lateralTuning.lqr.dcGain = 0.003
+	    ret.lateralTuning.lqr.scale = 2000.0
+	    ret.lateralTuning.lqr.ki = 0.01
+	    ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+	    ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+	    ret.lateralTuning.lqr.c = [1., 0.]
+	    ret.lateralTuning.lqr.k = [-100., 450.]
+	    ret.lateralTuning.lqr.l = [0.22, 0.318]
+	    ret.lateralTuning.lqr.dcGain = 0.003
       #ret.lateralTuning.pid.kf = 0.00005                >>>> PID들어간 항목 코멘트(#)처리
       ret.mass = 1950. + STD_CARGO_KG
       ret.wheelbase = 2.78
@@ -68,10 +68,10 @@ class CarInterface(CarInterfaceBase):
       #ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]    >>>> PID들어간 항목 코멘트(#)처리
     """
 
-    tire_stiffness_factor = 1.
-    ret.steerActuatorDelay = 0.3  # Default delay
+    tire_stiffness_factor = [float(self.kyd.conf['tireStiffnessFactor'])]  # 1.
+    ret.steerActuatorDelay = [float(self.kyd.conf['steerActuatorDelay'])]  # Default delay 0.3
     ret.steerRateCost = 0.5
-    ret.steerLimitTimer = 0.4
+    ret.steerLimitTimer = [float(self.kyd.conf['steerLimitTimer'])]  # 0.4
 
 
     if candidate == CAR.SANTAFE:
