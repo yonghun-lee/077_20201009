@@ -126,6 +126,7 @@ keys = {
   "OpkrBootNavigation": [TxType.PERSISTENT],
   "FingerprintIssuedFix": [TxType.PERSISTENT],
   "LdwsCarFix": [TxType.PERSISTENT],
+  "LateralControlMethod": [TxType.PERSISTENT],
 }
 
 

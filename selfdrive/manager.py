@@ -590,6 +590,7 @@ def main():
     ("OpkrBootNavigation", "0"),
     ("FingerprintIssuedFix", "0"),
     ("LdwsCarFix", "0"),
+    ("LateralControlMethod", "0"),
   ]
 
   # set unset params
