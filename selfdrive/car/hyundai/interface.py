@@ -7,7 +7,6 @@ from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 from common.params import Params
 from selfdrive.kyd_conf import kyd_conf
 
-
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
 
@@ -16,8 +15,6 @@ class CarInterface(CarInterfaceBase):
     super().__init__(CP, CarController, CarState )
     self.cp2 = self.CS.get_can2_parser(CP)
     self.kyd = kyd_conf()
-    self.params = Params()
-    self.lateralControlMethod = self.params.get('LateralControlMethod')
     
   @staticmethod
   def compute_gb(accel, speed):
@@ -39,7 +36,9 @@ class CarInterface(CarInterfaceBase):
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = [float(self.kyd.conf['steerLimitTimer'])]  # 0.4
 
-    if self.lateralControlMethod == 0:
+    self.param_LateralControlMethod = int(self.params.get('LateralControlMethod')) 
+
+    if self.param_LateralControlMethod == 0:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.pid.kf = 0.00005
         ret.mass = 1830. + STD_CARGO_KG
@@ -203,7 +202,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.0
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-    elif self.lateralControlMethod == 1:
+    elif self.param_LateralControlMethod == 1:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = 3.0
@@ -410,7 +409,7 @@ class CarInterface(CarInterfaceBase):
         ret.mass = 1955. + STD_CARGO_KG
         ret.wheelbase = 2.90
         ret.steerRatio = 13.0
-    elif self.lateralControlMethod == 2:
+    elif self.param_LateralControlMethod == 2:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = 2000.0
