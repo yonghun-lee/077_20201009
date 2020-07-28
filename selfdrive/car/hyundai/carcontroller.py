@@ -31,6 +31,8 @@ class CarController():
     self.last_resume_frame = 0
     self.last_lead_distance = 0
 
+    self.steer_mode = ""
+
     self.lkas11_cnt = 0
 
     self.nBlinker = 0
@@ -181,22 +183,28 @@ class CarController():
 
 
 
-    str_log1 = 'CV={:5.1f}/{:5.3f} TORQ:{:5.0f}'.format(  self.model_speed, self.model_sum, new_steer )
-    str_log2 = 'TIMER={:.1f} '.format( self.timer1.sampleTime() )
+    str_log1 = '곡률={:5.1f}/{:5.3f} 차량토크:{:5.0f} 조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log2 = '프레임율={:.1f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
     if not run_speed_ctrl:
-      str_log2 = 'MODE={:.0f} WARN={:.0f}  LKA={:.0f} STEER={:5.0f} '.format( CS.out.cruiseState.modeSel, CS.out.steerWarning, CS.lkas_button_on, CS.out.steeringTorque  )
+      if CS.out.cruiseState.modeSel == 0:
+        self.steer_mode = "오파모드"
+      elif CS.out.cruiseState.modeSel == 1:
+        self.steer_mode = "커브제어"
+      elif CS.out.cruiseState.modeSel == 2:
+        self.steer_mode = "차간제어"
+      elif CS.out.cruiseState.modeSel == 3:
+        self.steer_mode = "순정모드"
+      str_log2 = '주행모드={:s}  MDPS상태={:.0f} LKAS버튼={:.0f}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
       trace1.printf2( '{}'.format( str_log2 ) )
 
     #print( 'st={} cmd={} long={}  steer={} req={}'.format(CS.out.cruiseState.standstill, pcm_cancel_cmd, self.CP.openpilotLongitudinalControl, apply_steer, steer_req ) )
 
 
-
-
     if pcm_cancel_cmd and self.CP.openpilotLongitudinalControl:
-      can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.CANCEL))
+      can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
     elif CS.out.cruiseState.standstill:
       if self.last_lead_distance == 0 or not self.param_OpkrAutoResume:
         # get the lead distance from the Radar

@@ -86,6 +86,7 @@ class CarState(CarStateBase):
     ret.leftBlinker, ret.rightBlinker = self.update_blinker(cp)
 
     self.VSetDis = cp.vl["SCC11"]['VSetDis']
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]
     # cruise state
     #ret.cruiseState.available = True
     #ret.cruiseState.enabled = cp_scc.vl["SCC12"]['ACCMode'] != 0
