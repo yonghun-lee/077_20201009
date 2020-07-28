@@ -198,9 +198,9 @@ class SpdctrlFast(SpdController):
 
 
     def update_log(self, CS, set_speed, target_set_speed, long_wait_cmd ):
-        str3 = 'SS={:03.0f}/{:03.0f} DAt={:03.0f}/{:03.0f}/{:03.0f} DG={:02.0f}'.format(
-            set_speed,  CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug )
-        str4 = ' LD/LS={:03.0f}/{:03.0f} '.format(  CS.lead_distance, CS.lead_objspd )
+        str3 = '주행모드={:s}  설정속도={:03.0f}/{:03.0f}  타이머={:03.0f}/{:03.0f}/{:03.0f}'.format( CC.steer_mode,
+            set_speed,  CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer )
+        str4 = '  거리차/속도차={:03.0f}/{:03.0f}  DG={:02.0f}'.format(  CS.lead_distance, CS.lead_objspd, self.seq_step_debug )
 
         str5 = str3 +  str4
         trace1.printf2( str5 )
