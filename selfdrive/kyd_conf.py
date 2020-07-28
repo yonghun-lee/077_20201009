@@ -137,7 +137,7 @@ class kyd_conf():
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
-                     "tireStiffnessFactor":"1.", "steerActuatorDelay":"0.3", "steerLimitTimer":"0.4", \  
+                     "tireStiffnessFactor":"1.0", "steerActuatorDelay":"0.3", "steerLimitTimer":"0.4", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 
 
