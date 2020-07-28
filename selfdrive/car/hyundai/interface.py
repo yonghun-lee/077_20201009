@@ -36,9 +36,9 @@ class CarInterface(CarInterfaceBase):
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = [float(self.kyd.conf['steerLimitTimer'])]  # 0.4
 
-    self.param_LateralControlMethod = int(self.params.get('LateralControlMethod')) 
+    self.LateralControlMethod = [int(self.kyd.conf['LateralControlMethod'])]
 
-    if self.param_LateralControlMethod == 0:
+    if self.LateralControlMethod == 0:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.pid.kf = 0.00005
         ret.mass = 1830. + STD_CARGO_KG
@@ -202,7 +202,7 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 13.0
         ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kpBP = [[0.], [0.]]
         ret.lateralTuning.pid.kpV, ret.lateralTuning.pid.kiV = [[0.25], [0.05]]
-    elif self.param_LateralControlMethod == 1:
+    elif self.LateralControlMethod == 1:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.init('indi')
         ret.lateralTuning.indi.innerLoopGain = 3.0
@@ -409,7 +409,7 @@ class CarInterface(CarInterfaceBase):
         ret.mass = 1955. + STD_CARGO_KG
         ret.wheelbase = 2.90
         ret.steerRatio = 13.0
-    elif self.param_LateralControlMethod == 2:
+    elif self.LateralControlMethod == 2:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.init('lqr')
         ret.lateralTuning.lqr.scale = 2000.0
