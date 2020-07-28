@@ -183,7 +183,7 @@ class CarController():
 
 
 
-    str_log1 = '곡률={:5.1f}/{:5.3f}  차량토크={:5.0f}  조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log1 = '곡률={:6.1f}/{:5.3f}  차량토크={:5.0f}  조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
     str_log2 = '프레임율={:.1f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
