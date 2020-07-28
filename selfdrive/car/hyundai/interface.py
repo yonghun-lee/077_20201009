@@ -5,7 +5,6 @@ from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 from common.params import Params
-from selfdrive.kyd_conf import kyd_conf
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
@@ -14,14 +13,13 @@ class CarInterface(CarInterfaceBase):
   def __init__(self, CP, CarController, CarState):
     super().__init__(CP, CarController, CarState )
     self.cp2 = self.CS.get_can2_parser(CP)
-    self.kyd = kyd_conf()
     
   @staticmethod
   def compute_gb(accel, speed):
     return float(accel) / 3.0
 
   @staticmethod
-  def get_params(self, candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):  # pylint: disable=dangerous-default-value
+  def get_params(candidate, fingerprint=gen_empty_fingerprint(), has_relay=False, car_fw=[]):  # pylint: disable=dangerous-default-value
     ret = CarInterfaceBase.get_std_params(candidate, fingerprint, has_relay)
 
     ret.carName = "hyundai"
@@ -31,11 +29,10 @@ class CarInterface(CarInterfaceBase):
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
 
-    tire_stiffness_factor = [float(self.kyd.conf['tireStiffnessFactor'])]  # 1.
-    ret.steerActuatorDelay = [float(self.kyd.conf['steerActuatorDelay'])]  # Default delay 0.3
+    tire_stiffness_factor = 1.
+    ret.steerActuatorDelay = 0.3  # Default delay 0.3
     ret.steerRateCost = 0.5
-    ret.steerLimitTimer = [float(self.kyd.conf['steerLimitTimer'])]  # 0.4
-
+    ret.steerLimitTimer = 0.4
 
     if candidate == CAR.SANTAFE:
       ret.lateralTuning.pid.kf = 0.00005
