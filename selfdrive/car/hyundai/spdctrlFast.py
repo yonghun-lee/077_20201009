@@ -12,6 +12,7 @@ class SpdctrlFast(SpdController):
         super().__init__( CP )
         self.cv_Raio = 0.4
         self.cv_Dist = -6
+        self.steer_mode = ""
 
     def update_lead(self, CS,  dRel, yRel, vRel):
         lead_set_speed = self.cruise_set_speed_kph
@@ -198,7 +199,15 @@ class SpdctrlFast(SpdController):
 
 
     def update_log(self, CS, set_speed, target_set_speed, long_wait_cmd ):
-        str3 = '주행모드={:s}  설정속도={:03.0f}/{:03.0f}  타이머={:03.0f}/{:03.0f}/{:03.0f}'.format( CC.steer_mode,
+        if CS.out.cruiseState.modeSel == 0:
+            self.steer_mode = "오파모드"
+        elif CS.out.cruiseState.modeSel == 1:
+            self.steer_mode = "커브제어"
+        elif CS.out.cruiseState.modeSel == 2:
+            self.steer_mode = "차간제어"
+        elif CS.out.cruiseState.modeSel == 3:
+            self.steer_mode = "순정모드"
+        str3 = '주행모드={:s}  설정속도={:03.0f}/{:03.0f}  타이머={:03.0f}/{:03.0f}/{:03.0f}'.format( self.steer_mode,
             set_speed,  CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer )
         str4 = '  거리차/속도차={:03.0f}/{:03.0f}  DG={:02.0f}'.format(  CS.lead_distance, CS.lead_objspd, self.seq_step_debug )
 
