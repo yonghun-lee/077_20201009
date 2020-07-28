@@ -439,14 +439,14 @@ class CarInterface(CarInterfaceBase):
         ret.steerRatio = 14.4 * 1.15
       elif candidate == CAR.GENESIS:
         ret.lateralTuning.init('lqr')
-	      ret.lateralTuning.lqr.scale = 2000.0
-      	ret.lateralTuning.lqr.ki = 0.01
-      	ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
-      	ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
-      	ret.lateralTuning.lqr.c = [1., 0.]
-      	ret.lateralTuning.lqr.k = [-100., 450.]
-      	ret.lateralTuning.lqr.l = [0.22, 0.318]
-      	ret.lateralTuning.lqr.dcGain = 0.003
+        ret.lateralTuning.lqr.scale = 2000.0
+        ret.lateralTuning.lqr.ki = 0.01
+        ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+        ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+        ret.lateralTuning.lqr.c = [1., 0.]
+        ret.lateralTuning.lqr.k = [-100., 450.]
+        ret.lateralTuning.lqr.l = [0.22, 0.318]
+        ret.lateralTuning.lqr.dcGain = 0.003
         ret.mass = 2060. + STD_CARGO_KG
         ret.wheelbase = 3.01
         ret.steerRatio = 16.5
