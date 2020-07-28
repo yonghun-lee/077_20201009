@@ -183,9 +183,9 @@ class CarController():
 
 
 
-    str_log1 = '곡률={:5.1f}/{:5.3f} 차량토크:{:5.0f} 조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log1 = '곡률={:5.1f}/{:5.3f}  차량토크={:5.0f}  조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
     str_log2 = '프레임율={:.1f}'.format( self.timer1.sampleTime() )
-    trace1.printf( '{} {}'.format( str_log1, str_log2 ) )
+    trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
     if not run_speed_ctrl:
@@ -197,7 +197,7 @@ class CarController():
         self.steer_mode = "차간제어"
       elif CS.out.cruiseState.modeSel == 3:
         self.steer_mode = "순정모드"
-      str_log2 = '주행모드={:s}  MDPS상태={:.0f} LKAS버튼={:.0f}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
+      str_log2 = '주행모드={:s}  MDPS상태={:.0f}  LKAS버튼={:.0f}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
       trace1.printf2( '{}'.format( str_log2 ) )
 
     #print( 'st={} cmd={} long={}  steer={} req={}'.format(CS.out.cruiseState.standstill, pcm_cancel_cmd, self.CP.openpilotLongitudinalControl, apply_steer, steer_req ) )
@@ -215,6 +215,7 @@ class CarController():
       if CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame)*DT_CTRL > 0.2:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed))
         self.last_resume_frame = frame
+        self.last_lead_distance = CS.lead_distance
     elif run_speed_ctrl and self.SC != None:
       is_sc_run = self.SC.update( CS, sm, self )
       if is_sc_run:
