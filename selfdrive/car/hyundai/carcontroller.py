@@ -147,7 +147,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
+    lkas_active = enabled and #abs(CS.out.steeringAngle) < 90.
 
     if not lkas_active:
       apply_steer = 0
@@ -163,23 +163,23 @@ class CarController():
     if clu11_speed > enabled_speed:
       enabled_speed = clu11_speed
 
-
-    if frame == 0: # initialize counts from last received count signals
-      self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"]
-    self.lkas11_cnt = (self.lkas11_cnt + 1) % 0x10
-
     can_sends = []
+    if frame == 0: # initialize counts from last received count signals
+      self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
+    self.lkas11_cnt %= 0x10
+
     can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, steer_req,
                                    CS.lkas11, sys_warning, sys_state, CC, enabled, 0 ))
     if CS.mdps_bus or CS.scc_bus == 1: # send lkas11 bus 1 if mdps is on bus 1                               
       can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, steer_req,
                                    CS.lkas11, sys_warning, sys_state, CC, enabled, 1 ))
 
-    if frame % 2 and CS.mdps_bus == 1: # send clu11 to mdps if it is not on bus 0                                   
+    if CS.mdps_bus: # send clu11 to mdps if it is not on bus 0                                   
+    #if frame % 2 and CS.mdps_bus == 1: # send clu11 to mdps if it is not on bus 0                                   
       can_sends.append(create_clu11(self.packer, frame, CS.mdps_bus, CS.clu11, Buttons.NONE, enabled_speed))
     
-    if CS.mdps_bus:
-      can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))                                   
+    #if CS.mdps_bus:
+    can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))                                   
 
 
 
