@@ -207,7 +207,7 @@ class CarController():
         self.lkas_switch = "OFF"
       elif CS.lkas_button_on == 1:
         self.lkas_switch = "ON"
-      str_log2 = '주행모드={:s}  MDPS상태={:.0f}  LKAS버튼={:.0f}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
+      str_log2 = '주행모드={:s}  MDPS상태={:s}  LKAS버튼={:s}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
       trace1.printf2( '{}'.format( str_log2 ) )
 
     #print( 'st={} cmd={} long={}  steer={} req={}'.format(CS.out.cruiseState.standstill, pcm_cancel_cmd, self.CP.openpilotLongitudinalControl, apply_steer, steer_req ) )
