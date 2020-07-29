@@ -23,7 +23,7 @@ LaneChangeState = log.PathPlan.LaneChangeState
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
-    self.CP = CP    
+    self.CP = CP
     self.apply_steer_last = 0
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
@@ -32,6 +32,8 @@ class CarController():
     self.last_lead_distance = 0
 
     self.steer_mode = ""
+    self.mdps_status = ""
+    self.lkas_switch = ""
 
     self.lkas11_cnt = 0
 
@@ -118,7 +120,7 @@ class CarController():
       elif self.param_OpkrAccelProfile == 2:
         self.SC = SpdctrlNormal()
       else:
-        self.SC = SpdctrlFast()      
+        self.SC = SpdctrlFast()
 
 
   def update(self, CC, CS, frame, sm, CP ):
@@ -159,7 +161,7 @@ class CarController():
     sys_warning, sys_state = self.process_hud_alert( lkas_active, CC )
 
     clu11_speed = CS.clu11["CF_Clu_Vanz"]
-    enabled_speed = 38 if CS.is_set_speed_in_mph  else 60
+    enabled_speed = 38 if CS.is_set_speed_in_mph  else 55
     if clu11_speed > enabled_speed:
       enabled_speed = clu11_speed
 
@@ -183,8 +185,8 @@ class CarController():
 
 
 
-    str_log1 = '곡률={:6.1f}/{:5.3f}  차량토크={:5.0f}  조향토크={:5.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:.1f}'.format( self.timer1.sampleTime() )
+    str_log1 = '곡률={:05.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log2 = '프레임율={:03.1f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
@@ -197,6 +199,14 @@ class CarController():
         self.steer_mode = "차간제어"
       elif CS.out.cruiseState.modeSel == 3:
         self.steer_mode = "순정모드"
+      if CS.out.steerWarning == 0:
+        self.mdps_status = "정상"
+      elif CS.out.steerWarning == 1:
+        self.mdps_status = "오류"
+      if CS.lkas_button_on == 0:
+        self.lkas_switch = "OFF"
+      elif CS.lkas_button_on == 1:
+        self.lkas_switch = "ON"
       str_log2 = '주행모드={:s}  MDPS상태={:.0f}  LKAS버튼={:.0f}'.format( self.steer_mode, CS.out.steerWarning, CS.lkas_button_on  )
       trace1.printf2( '{}'.format( str_log2 ) )
 
@@ -212,14 +222,14 @@ class CarController():
       # SCC won't resume anyway when the lead distace is less than 3.7m
       # send resume at a max freq of 5Hz
       #if CS.lead_distance > 3.7 and (frame - self.last_resume_frame)*DT_CTRL > 0.2:
-      if CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame)*DT_CTRL > 0.2:
+      if CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame)*DT_CTRL > 0.3:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed))
         self.last_resume_frame = frame
         self.last_lead_distance = CS.lead_distance
     elif run_speed_ctrl and self.SC != None:
       is_sc_run = self.SC.update( CS, sm, self )
       if is_sc_run:
-        can_sends.append(create_clu11(self.packer, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
+        can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
         self.last_resume_frame = frame
 
     # 20 Hz LFA MFA message
