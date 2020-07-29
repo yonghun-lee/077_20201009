@@ -231,6 +231,8 @@ class CarController():
       if is_sc_run:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
         self.last_resume_frame = frame
+      if not is_sc_run and CS.cruise_buttons == Buttons.RES_ACCEL:
+        can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, 100 ))
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in [CAR.PALISADE, CAR.SELTOS]:
