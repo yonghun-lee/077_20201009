@@ -1,8 +1,7 @@
 import crcmod
 import copy
 from common.params import Params
-from selfdrive.car.hyundai.values import CAR, CHECKSUM, Buttons
-
+from selfdrive.car.hyundai.values import CAR, CHECKSUM
 
 hyundai_checksum = crcmod.mkCrcFun(0x11D, initCrc=0xFD, rev=False, xorOut=0xdf)
 
@@ -74,13 +73,8 @@ def create_clu11(packer, frame, bus, clu11, button, speed = None):
   values = copy.deepcopy( clu11 )
   if speed != None:
     values["CF_Clu_Vanz"] = speed
-  
-  if button == Buttons.RES_ACCEL
-    values["CF_Clu_CruiseSwState"] = 1
-  elif button == Buttons.RES_DECEL
-    values["CF_Clu_CruiseSwState"] = 2
-  
-  #values["CF_Clu_CruiseSwState"] = button
+    
+  values["CF_Clu_CruiseSwState"] = int(button)
   values["CF_Clu_AliveCnt1"] = frame % 0x10
   return packer.make_can_msg("CLU11", bus, values)
 
