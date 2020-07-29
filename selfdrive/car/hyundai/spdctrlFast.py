@@ -10,7 +10,7 @@ import common.log as trace1
 class SpdctrlFast(SpdController):
     def __init__(self, CP=None):
         super().__init__( CP )
-        self.cv_Raio = 0.4
+        self.cv_Raio = 0.45
         self.cv_Dist = -6
         self.steer_mode = ""
 
@@ -209,7 +209,7 @@ class SpdctrlFast(SpdController):
             self.steer_mode = "순정모드"
         str3 = '주행모드={:s}  설정속도={:03.0f}/{:03.0f}  타이머={:03.0f}/{:03.0f}/{:03.0f}'.format( self.steer_mode,
             set_speed,  CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer )
-        str4 = '  거리차/속도차={:03.0f}/{:03.0f}  DG={:02.0f}'.format(  CS.lead_distance, CS.lead_objspd, self.seq_step_debug )
+        str4 = '  거리차/속도차={:03.0f}/{:03.0f}  DEBUG={:02.0f}'.format(  CS.lead_distance, CS.lead_objspd, self.seq_step_debug )
 
         str5 = str3 +  str4
         trace1.printf2( str5 )
