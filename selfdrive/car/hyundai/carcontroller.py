@@ -160,7 +160,7 @@ class CarController():
 
     if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < self.lanechange_speed * CV.KPH_TO_MS:
       self.lanechange_manual_timer = 100
-    if CS.out.leftBlinker and CS.out.rightBlinker
+    if CS.out.leftBlinker and CS.out.rightBlinker:
       self.emergency_manual_timer = 100
     if self.lanechange_manual_timer:
       lkas_active = 0
