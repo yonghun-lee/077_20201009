@@ -159,9 +159,9 @@ class CarController():
     lkas_active = enabled #and abs(CS.out.steeringAngle) < 90.
 
     if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < self.lanechange_speed * CV.KPH_TO_MS:
-      self.lanechange_manual_timer = 100
+      self.lanechange_manual_timer = 1
     if CS.out.leftBlinker and CS.out.rightBlinker:
-      self.emergency_manual_timer = 100
+      self.emergency_manual_timer = 1
     if self.lanechange_manual_timer:
       lkas_active = 0
     if self.lanechange_manual_timer > 0:
