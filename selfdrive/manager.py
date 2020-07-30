@@ -436,16 +436,9 @@ def manager_thread():
 
   params = Params()
 
-  EnableDriverMonitoring = int(params.get('OpkrEnableDriverMonitoring')) 
-  EnableLogger = int(params.get('OpkrEnableLogger')) 
+  EnableLogger = int(params.get('OpkrEnableLogger'))     
 
-  if not EnableDriverMonitoring:
-    car_started_processes.remove( 'dmonitoringd' )
-    car_started_processes.remove( 'dmonitoringmodeld' )
-    
-
-  EnableLogger = (params.get("RecordFront") != b"0")
-
+  #EnableLogger = (params.get("RecordFront") != b"0")
 
   if not EnableLogger:
     car_started_processes.remove( 'loggerd' )
