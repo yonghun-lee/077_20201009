@@ -257,7 +257,7 @@ class CarController():
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
         self.last_resume_frame = frame
         self.resume_required = False
-    else
+    else:
       self.resume_required = False
 
     # 20 Hz LFA MFA message
