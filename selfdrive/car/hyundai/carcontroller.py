@@ -156,7 +156,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
-    lkas_active = enabled #and abs(CS.out.steeringAngle) < 90.
+    lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
 
     if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < self.lanechange_speed * CV.KPH_TO_MS:
       self.lanechange_manual_timer = 10
