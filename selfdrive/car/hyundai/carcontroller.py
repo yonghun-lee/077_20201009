@@ -20,10 +20,6 @@ import common.CTime1000 as tm
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LaneChangeState = log.PathPlan.LaneChangeState
-steerRatio = log.LiveParameters.steerRatio
-stiffnessFactor = log.LiveParameters.stiffnessFactor
-angleOffsetAverage = log.LiveParameters.angleOffsetAverage
-
 
 class CarController():
   def __init__(self, dbc_name, CP, VM):
