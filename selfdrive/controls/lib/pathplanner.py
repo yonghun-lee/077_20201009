@@ -9,13 +9,15 @@ from selfdrive.config import Conversions as CV
 from common.params import Params
 import cereal.messaging as messaging
 from cereal import log
+from selfdrive.kyd_conf import kyd_conf
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
 
 LOG_MPC = os.environ.get('LOG_MPC', False)
 
-LANE_CHANGE_SPEED_MIN = 60 * CV.KPH_TO_MS
+kyd = kyd_conf()
+LANE_CHANGE_SPEED_MIN = int(kyd.conf['lanechangeSpeed']) * CV.KPH_TO_MS
 LANE_CHANGE_TIME_MAX = 10.
 
 DESIRES = {

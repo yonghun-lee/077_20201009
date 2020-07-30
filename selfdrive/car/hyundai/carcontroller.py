@@ -6,6 +6,7 @@ from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
+from selfdrive.kyd_conf import kyd_conf
 
 # speed controller
 from selfdrive.car.hyundai.spdcontroller  import SpdController
@@ -30,6 +31,12 @@ class CarController():
     self.steer_rate_limited = False
     self.last_resume_frame = 0
     self.last_lead_distance = 0
+    self.lanechange_manual_timer = 0
+    self.emergency_manual_timer = 0
+    self.resume_required = False
+
+    self.kyd = kyd_conf()
+    self.lanechange_speed = int(self.kyd.conf['lanechangeSpeed'])
 
     self.steer_mode = ""
     self.mdps_status = ""
@@ -151,6 +158,17 @@ class CarController():
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
     lkas_active = enabled #and abs(CS.out.steeringAngle) < 90.
 
+    if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < self.lanechange_speed * CV.KPH_TO_MS:
+      self.lanechange_manual_timer = 100
+    if CS.out.leftBlinker and CS.out.rightBlinker
+      self.emergency_manual_timer = 100
+    if self.lanechange_manual_timer:
+      lkas_active = 0
+    if self.lanechange_manual_timer > 0:
+      self.lanechange_manual_timer -= 1
+    if self.emergency_manual_timer > 0:
+      self.emergency_manual_timer -= 1
+
     if not lkas_active:
       apply_steer = 0
 
@@ -218,6 +236,7 @@ class CarController():
     if pcm_cancel_cmd and self.CP.openpilotLongitudinalControl:
       can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
     elif CS.out.cruiseState.standstill:
+      self.resume_required = True
       if self.last_lead_distance == 0 or not self.param_OpkrAutoResume:
         # get the lead distance from the Radar
         self.last_lead_distance = CS.lead_distance
@@ -228,6 +247,7 @@ class CarController():
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed))
         self.last_resume_frame = frame
         self.last_lead_distance = CS.lead_distance
+        self.resume_required = False
     elif run_speed_ctrl and self.SC != None:
       is_sc_run = self.SC.update( CS, sm, self )
       if is_sc_run:

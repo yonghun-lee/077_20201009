@@ -125,6 +125,10 @@ class kyd_conf():
         self.config.update({"dc_gain":"-1"})
         self.element_updated = True
 
+      if "lanechangeSpeed" not in self.config:
+        self.config.update({"lanechangeSpeed":"60"})
+        self.element_updated = True
+
       if self.element_updated:
         print("updated")
         self.write_config(self.config)
@@ -136,7 +140,7 @@ class kyd_conf():
       	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
-                     "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
+                     "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", "lanechangeSpeed":"60", \
                      "tireStiffnessFactor":"1.0", "steerActuatorDelay":"0.3", "steerLimitTimer":"0.4", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 

@@ -464,6 +464,22 @@ EVENTS = {
       AlertStatus.normal, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1),
   },
+  
+  EventName.laneChangeManual: {
+    ET.WARNING: Alert(
+      "운전자 방향 전환 중",
+      "다른 차량에 주의하세요",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+  },
+
+  EventName.emgButtonManual: {
+    ET.WARNING: Alert(
+      "비상등 점멸 중",
+      "",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+  },  
 
   EventName.steerSaturated: {
     ET.WARNING: Alert(

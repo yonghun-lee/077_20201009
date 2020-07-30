@@ -768,6 +768,13 @@ class CarInterface(CarInterfaceBase):
     events = self.create_common_events(ret)
     #TODO: addd abs(self.CS.angle_steers) > 90 to 'steerTempUnavailable' event
 
+    if self.CC.lanechange_manual_timer:
+      events.add(EventName.laneChangeManual)
+    if self.CC.emergency_manual_timer:
+      events.add(EventName.emgButtonManual)
+    if self.CC.resume_required:
+      events.add(EventName.resumeRequired)
+
     # low speed steer alert hysteresis logic (only for cars with steer cut off above 10 m/s)
     if ret.vEgo < (self.CP.minSteerSpeed + 2.) and self.CP.minSteerSpeed > 10.:
       self.low_speed_alert = True
