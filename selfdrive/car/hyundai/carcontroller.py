@@ -3,6 +3,7 @@ from common.realtime import DT_CTRL
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfa_mfa, create_mdps12
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
+from selfdrive.controls.lib.vehicle_model import VehicleModel
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
@@ -24,6 +25,7 @@ LaneChangeState = log.PathPlan.LaneChangeState
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.CP = CP
+    self.VM = VehicleModel(CP)
     self.apply_steer_last = 0
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
@@ -129,7 +131,7 @@ class CarController():
         self.SC = SpdctrlFast()
 
 
-  def update(self, CC, CS, frame, sm, CP ):
+  def update(self, CC, CS, frame, sm, CP, VM ):
     if self.CP != CP:
       self.CP = CP
 
@@ -202,7 +204,8 @@ class CarController():
 
 
 
-    str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    #str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}'.format( self.timer1.sampleTime(), VM.sR )
     #str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}/STF:{:02.1f}/ANGOFS:{:04.2f}'.format( self.timer1.sampleTime(), steerRatio, stiffnessFactor, angleOffsetAverage )
     str_log2 = '프레임율={:03.0f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
