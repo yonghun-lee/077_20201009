@@ -25,7 +25,6 @@ LaneChangeState = log.PathPlan.LaneChangeState
 class CarController():
   def __init__(self, dbc_name, CP, VM):
     self.CP = CP
-    self.VM = VehicleModel(CP)
     self.apply_steer_last = 0
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
