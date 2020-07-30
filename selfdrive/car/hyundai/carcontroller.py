@@ -143,7 +143,7 @@ class CarController():
     
     path_plan = sm['pathPlan']
 
-    self.steerRatio = sm['liveParameters'].steerRatio
+    self.steerRatio = sm['liveParameters'].angleOffset
 
     abs_angle_steers =  abs(actuators.steerAngle)
 
