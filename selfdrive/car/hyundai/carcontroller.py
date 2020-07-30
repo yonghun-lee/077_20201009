@@ -123,7 +123,7 @@ class CarController():
         self.SC = SpdctrlFast()
 
 
-  def update(self, CC, CS, frame, sm, CP):
+  def update(self, CC, CS, frame, sm, CP, VM ):
     if self.CP != CP:
       self.CP = CP
 
@@ -186,7 +186,7 @@ class CarController():
 
 
     str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}/STFT:{:03.2f}/ANGOFS:{:04.2f}'.format( self.timer1.sampleTime(), path_plan.sr, path_plan.x, path_plan.angle_offset )
+    str_log2 = '프레임율={:03.0f}  SR:{:04.2f}'.format( self.timer1.sampleTime(), VM.sR )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
