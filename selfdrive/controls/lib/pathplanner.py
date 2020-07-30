@@ -104,7 +104,7 @@ class PathPlanner():
     x = max(sm['liveParameters'].stiffnessFactor, 0.1)
     sr = max(sm['liveParameters'].steerRatio, 0.1)
     VM.update_params(x, sr)
-    print('SteerRatio= %04.02f'.format( sr ))
+    print('SteerRatio={}'.format( sr ))
 
     curvature_factor = VM.curvature_factor(v_ego)
 
