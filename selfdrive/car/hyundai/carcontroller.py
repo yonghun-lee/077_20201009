@@ -7,20 +7,6 @@ from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
 
-import os
-import math
-from common.realtime import sec_since_boot, DT_MDL
-from selfdrive.swaglog import cloudlog
-from selfdrive.controls.lib.lateral_mpc import libmpc_py
-from selfdrive.controls.lib.drive_helpers import MPC_COST_LAT
-from selfdrive.controls.lib.lane_planner import LanePlanner
-from selfdrive.config import Conversions as CV
-from common.params import Params
-import cereal.messaging as messaging
-from cereal import log
-
-
-
 # speed controller
 from selfdrive.car.hyundai.spdcontroller  import SpdController
 from selfdrive.car.hyundai.spdctrlSlow  import SpdctrlSlow
@@ -137,7 +123,7 @@ class CarController():
         self.SC = SpdctrlFast()
 
 
-  def update(self, CC, CS, frame, sm, CP ):
+  def update(self, CC, CS, frame, sm, CP):
     if self.CP != CP:
       self.CP = CP
 
@@ -200,7 +186,7 @@ class CarController():
 
 
     str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}/STFT:{:03.2f}/ANGOFS:{:04.2f}'.format( self.timer1.sampleTime(), self.sm['liveParameters'].steerRatio, self.sm['liveParameters'].stiffnessFactor, self.sm['liveParameters'].angleOffset )
+    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}/STFT:{:03.2f}/ANGOFS:{:04.2f}'.format( self.timer1.sampleTime(), path_plan.sr, path_plan.x, path_plan.angle_offset )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
