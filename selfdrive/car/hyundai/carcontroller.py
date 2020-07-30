@@ -7,6 +7,10 @@ from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
 
+from selfdrive.controls.lib.lateral_mpc import libmpc_py
+
+
+
 # speed controller
 from selfdrive.car.hyundai.spdcontroller  import SpdController
 from selfdrive.car.hyundai.spdctrlSlow  import SpdctrlSlow
