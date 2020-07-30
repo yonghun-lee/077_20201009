@@ -7,7 +7,6 @@ from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
 from selfdrive.kyd_conf import kyd_conf
-import cereal.messaging as messaging
 
 # speed controller
 from selfdrive.car.hyundai.spdcontroller  import SpdController
@@ -34,7 +33,6 @@ class CarController():
     self.lanechange_manual_timer = 0
     self.emergency_manual_timer = 0
     self.resume_required = False
-    self.steerRatio = 0
 
     self.kyd = kyd_conf()
     self.lanechange_speed = int(self.kyd.conf['lanechangeSpeed'])
@@ -143,8 +141,6 @@ class CarController():
     
     path_plan = sm['pathPlan']
 
-    self.steerRatio = sm['liveParameters'].angleOffset
-
     abs_angle_steers =  abs(actuators.steerAngle)
 
     self.dRel, self.yRel, self.vRel = SpdController.get_lead( sm )
@@ -207,9 +203,7 @@ class CarController():
 
 
     str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}'.format( self.timer1.sampleTime(), self.steerRatio )
-    #str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}/STF:{:02.1f}/ANGOFS:{:04.2f}'.format( self.timer1.sampleTime(), steerRatio, stiffnessFactor, angleOffsetAverage )
-    #str_log2 = '프레임율={:03.0f}'.format( self.timer1.sampleTime() )
+    str_log2 = '프레임율={:03.0f}  LIVE=SR:{:04.2f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
