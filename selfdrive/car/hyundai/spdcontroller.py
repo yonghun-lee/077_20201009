@@ -223,10 +223,10 @@ class SpdController():
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
-                time = 50
+                time = 100
         else:
             if delta_speed < -safety_dis:
-                time = 50
+                time = 100
 
         return time, set_speed
 
