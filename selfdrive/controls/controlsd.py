@@ -54,7 +54,7 @@ class Controls:
 
     self.sm = sm
     if self.sm is None:
-      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration',
+      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration', 'liveParameters'
                                      'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
 
     self.can_sock = can_sock
@@ -433,7 +433,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    #log_alertTextMsg1 += '컨트롤={}'.format( self.controlsAllowed )
+    log_alertTextMsg1 += 'SR={:04.2f}'.format( sm['liveParameters'].steerRatio )
     
 
     CC = car.CarControl.new_message()
