@@ -433,7 +433,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg1 += '  LIVE=(SR:{:04.2f}/STF:{:03.2f}/ANGOFS:{:04.2f})'.format( self.sm['liveParameters'].steerRatio, self.sm['liveParameters'].stiffnessFactor, self.sm['liveParameters'].angleOffsetAverage )
+    log_alertTextMsg1 += '  L=(SR:{:04.2f}/STF:{:03.2f}/ANG:{:04.2f})'.format( self.sm['liveParameters'].steerRatio, self.sm['liveParameters'].stiffnessFactor, self.sm['liveParameters'].angleOffsetAverage )
     
 
     CC = car.CarControl.new_message()
