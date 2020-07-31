@@ -118,7 +118,6 @@ typedef struct UIScene {
 
   std::string alert_text1;
   std::string alert_text2;
-  std::string alert_text3;
   std::string alert_type;
   cereal::ControlsState::AlertSize alert_size;
 
@@ -149,7 +148,6 @@ typedef struct UIScene {
   {
       char text1[512];
       char text2[512];
-      char text3[512];
   } alert;
 } UIScene;
 
@@ -271,7 +269,7 @@ typedef struct UIState {
 
 // API
 void ui_draw_vision_alert(UIState *s, cereal::ControlsState::AlertSize va_size, int va_color,
-                          const char* va_text1, const char* va_text2, const char* va_text3);
+                          const char* va_text1, const char* va_text2);
 void ui_draw(UIState *s);
 void ui_draw_sidebar(UIState *s);
 void ui_draw_image(NVGcontext *vg, float x, float y, float w, float h, int image, float alpha);

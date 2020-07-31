@@ -897,7 +897,7 @@ int main(int argc, char* argv[]) {
         s->scene.alert_size = cereal::ControlsState::AlertSize::FULL;
         update_status(s, STATUS_ALERT);
       }
-      ui_draw_vision_alert(s, s->scene.alert_size, s->status, s->scene.alert_text1.c_str(), s->scene.alert_text2.c_str(), s->scene.alert_text3.c_str());
+      ui_draw_vision_alert(s, s->scene.alert_size, s->status, s->scene.alert_text1.c_str(), s->scene.alert_text2.c_str());
     }
 
     read_param_timeout(&s->is_metric, "IsMetric", &s->is_metric_timeout);
