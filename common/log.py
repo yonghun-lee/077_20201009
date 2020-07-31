@@ -6,7 +6,6 @@ ROOT_LOG = '/data/media/0/videos/'
 
 global_alertTextMsg1 = 'T1'
 global_alertTextMsg2 = 'T2'
-global_alertTextMsg3 = 'T3'
 
 
 
@@ -16,11 +15,7 @@ def printf( txt ):
 
 def printf2( txt ):
     global global_alertTextMsg2
-    global_alertTextMsg2 = txt
-    
-def printf3( txt ):
-    global global_alertTextMsg3
-    global_alertTextMsg3 = txt
+    global_alertTextMsg2 = txt    
 
 class Loger:
     debug_step_latch = 0   # debug

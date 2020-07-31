@@ -411,7 +411,6 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg3 = trace1.global_alertTextMsg3
 
     self.controlsAllowed = self.sm['health'].controlsAllowed
     log_alertTextMsg1 += ' ctrl={}'.format( self.controlsAllowed )
@@ -516,8 +515,7 @@ class Controls:
     controlsState.forceDecel = bool(force_decel)
     controlsState.canErrorCounter = self.can_error_counter
     controlsState.alertTextMsg1 = str(trace1.global_alertTextMsg1)
-    controlsState.alertTextMsg2 = str(trace1.global_alertTextMsg2)
-    controlsState.alertTextMsg3 = str(trace1.global_alertTextMsg3)
+    controlsState.alertTextMsg2 = str(trace1.global_alertTextMsg2)    
 
     if self.CP.lateralTuning.which() == 'pid':
       controlsState.lateralControlState.pidState = lac_log

@@ -800,7 +800,6 @@ static void ui_draw_debug(UIState *s)
 
   ui_print( s, 0, 1020, "%s", scene.alert.text1 );
   ui_print( s, 0, 1078, "%s", scene.alert.text2 );
-  ui_print( s, 0, 0, "%s", scene.alert.text3 );
 
 }
 
@@ -960,7 +959,7 @@ static void ui_draw_vision_footer(UIState *s) {
 }
 
 void ui_draw_vision_alert(UIState *s, cereal::ControlsState::AlertSize va_size, int va_color,
-                          const char* va_text1, const char* va_text2, const char* va_text3) {
+                          const char* va_text1, const char* va_text2) {
   static std::map<cereal::ControlsState::AlertSize, const int> alert_size_map = {
       {cereal::ControlsState::AlertSize::NONE, 0},
       {cereal::ControlsState::AlertSize::SMALL, 241},
@@ -994,7 +993,6 @@ void ui_draw_vision_alert(UIState *s, cereal::ControlsState::AlertSize va_size, 
   } else if (va_size == cereal::ControlsState::AlertSize::MID) {
     ui_draw_text(s->vg, alr_x+alr_w/2, alr_y+alr_h/2-45, va_text1, 48*2.5, COLOR_WHITE, s->font_sans_bold);
     ui_draw_text(s->vg, alr_x+alr_w/2, alr_y+alr_h/2+75, va_text2, 36*2.5, COLOR_WHITE, s->font_sans_regular);
-    ui_draw_text(s->vg, alr_x+alr_w/2, alr_y+alr_h/2+75, va_text3, 36*2.5, COLOR_WHITE, s->font_sans_regular);
   } else if (va_size == cereal::ControlsState::AlertSize::FULL) {
     nvgFontSize(s->vg, ((longAlert1?72:96)*2.5)*fFontSize);
     nvgFontFaceId(s->vg, s->font_sans_bold);
@@ -1004,10 +1002,6 @@ void ui_draw_vision_alert(UIState *s, cereal::ControlsState::AlertSize va_size, 
     nvgFontFaceId(s->vg,  s->font_sans_regular);
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
     nvgTextBox(s->vg, alr_x, alr_h-(longAlert1?300:360), alr_w-60, va_text2, NULL);
-    nvgFontSize(s->vg, 48*2.5*fFontSize);
-    nvgFontFaceId(s->vg,  s->font_sans_regular);
-    nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BOTTOM);
-    nvgTextBox(s->vg, alr_x, alr_h-(longAlert1?300:360), alr_w-60, va_text3, NULL);
   }
 }
 
