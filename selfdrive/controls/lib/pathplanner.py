@@ -9,6 +9,7 @@ from selfdrive.config import Conversions as CV
 from common.params import Params
 import cereal.messaging as messaging
 from cereal import log
+import common.log as trace1
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
@@ -183,6 +184,9 @@ class PathPlanner():
     # account for actuation delay
     #self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, CP.steerRatio, CP.steerActuatorDelay)
     self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
+
+    str_log1 = 'SR={:04.2f}'.format( VM.sR )
+    trace1.printf3( '{}'.format( str_log1 ) )
 
     v_ego_mpc = max(v_ego, 5.0)  # avoid mpc roughness due to low speed
     self.libmpc.run_mpc(self.cur_state, self.mpc_solution,

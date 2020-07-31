@@ -342,17 +342,24 @@ void handle_message(UIState *s, SubMaster &sm) {
 // debug Message
     std::string user_text1 = scene.controls_state.getAlertTextMsg1();
     std::string user_text2 = scene.controls_state.getAlertTextMsg2();
+    std::string user_text3 = scene.controls_state.getAlertTextMsg3();
     const char* va_text1 = user_text1.c_str();
-    const char* va_text2 = user_text2.c_str();    
-    if (va_text1) 
+    const char* va_text2 = user_text2.c_str();
+    const char* va_text3 = user_text3.c_str();
+    if (va_text1)
       snprintf(scene.alert.text1, sizeof(scene.alert.text1), "%s", va_text1);
     else 
       scene.alert.text1[0] = '\0';
 
-    if (va_text2) 
+    if (va_text2)
       snprintf(scene.alert.text2, sizeof(scene.alert.text2), "%s", va_text2);
     else 
       scene.alert.text2[0] = '\0';
+    
+	if (va_text3)
+      snprintf(scene.alert.text3, sizeof(scene.alert.text3), "%s", va_text3);
+    else 
+      scene.alert.text3[0] = '\0';
   }
   if (sm.updated("radarState")) {
     auto data = sm["radarState"].getRadarState();
