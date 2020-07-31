@@ -355,8 +355,7 @@ void handle_message(UIState *s, SubMaster &sm) {
       snprintf(scene.alert.text2, sizeof(scene.alert.text2), "%s", va_text2);
     else 
       scene.alert.text2[0] = '\0';
-    
-	if (va_text3)
+    if (va_text3)
       snprintf(scene.alert.text3, sizeof(scene.alert.text3), "%s", va_text3);
     else 
       scene.alert.text3[0] = '\0';
