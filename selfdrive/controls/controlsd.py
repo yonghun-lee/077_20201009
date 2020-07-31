@@ -433,7 +433,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg1 += '컨트롤='.format( self.controlsAllowed )    
+    #log_alertTextMsg1 += '컨트롤={}'.format( self.controlsAllowed )
     
 
     CC = car.CarControl.new_message()
