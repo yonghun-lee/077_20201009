@@ -447,7 +447,6 @@ def manager_thread():
     persistent_processes.remove( 'logcatd' )
     persistent_processes.remove( 'updated' )
     persistent_processes.remove( 'deleter' )
-    persistent_processes.remove( 'tombstone' )
   else:
     # save boot log
     subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))  
