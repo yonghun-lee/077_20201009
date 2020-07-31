@@ -198,8 +198,8 @@ class CarController():
 
 
 
-    str_log1 = '곡률={:04.1f}/{:05.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:03.0f}  '.format( self.timer1.sampleTime() )
+    str_log1 = '곡률={:04.1f}/{:06.3f}  차량토크={:04.0f}  조향토크={:04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log2 = '프레임율={:03.0f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None

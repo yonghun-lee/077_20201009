@@ -54,8 +54,8 @@ class Controls:
 
     self.sm = sm
     if self.sm is None:
-      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration', 'liveParameters',
-                                     'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
+      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration',
+                                     'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman', 'liveParameters'])
 
     self.can_sock = can_sock
     if can_sock is None:
@@ -433,7 +433,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg1 += 'SR={:04.2f}'.format( self.sm['liveParameters'].steerRatio )
+    log_alertTextMsg1 += '  LIVE=(SR:{:04.2f}/STF:{:03.2f}/ANGOFS:{:04.2f})'.format( self.sm['liveParameters'].steerRatio, self.sm['liveParameters'].stiffnessFactor, self.sm['liveParameters'].angleOffsetAverage )
     
 
     CC = car.CarControl.new_message()
