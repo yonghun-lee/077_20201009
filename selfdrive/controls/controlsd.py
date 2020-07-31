@@ -242,7 +242,7 @@ class Controls:
     #if CS.brakePressed and self.sm['plan'].vTargetFuture >= STARTING_TARGET_SPEED \
     #   and not self.CP.radarOffCan and CS.vEgo < 0.3:
     #  self.events.add(EventName.noTarget)
-sm
+
   def data_sample(self):
     """Receive data from sockets and update carState"""
 
