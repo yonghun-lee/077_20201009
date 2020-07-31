@@ -184,7 +184,7 @@ class PathPlanner():
     # account for actuation delay
     #self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, CP.steerRatio, CP.steerActuatorDelay)
     self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
-    trace1.global_alertTextMsg1 += 'LIVE(SR:{:04.2f}/STF:{:03.2f}/ANGOFS:{:03.2f}'.format( VM.sR, sm['liveParameters'].stiffnessFactor, float(sm['liveParameters'].angleOffsetAverage) )
+    trace1.printf( 'LIVE(SR:{:04.2f}/STF:{:03.2f}/ANGOFS:{:03.2f}'.format( VM.sR, float(sm['liveParameters'].stiffnessFactor), float(sm['liveParameters'].angleOffsetAverage) ) )
 
     v_ego_mpc = max(v_ego, 5.0)  # avoid mpc roughness due to low speed
     self.libmpc.run_mpc(self.cur_state, self.mpc_solution,
