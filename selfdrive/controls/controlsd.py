@@ -54,7 +54,7 @@ class Controls:
 
     self.sm = sm
     if self.sm is None:
-      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration', 'liveParameters'
+      self.sm = messaging.SubMaster(['thermal', 'health', 'frame', 'model', 'liveCalibration', 'liveParameters',
                                      'dMonitoringState', 'plan', 'pathPlan', 'liveLocationKalman'])
 
     self.can_sock = can_sock
