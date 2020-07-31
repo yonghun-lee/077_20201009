@@ -484,7 +484,7 @@ class Controls:
 
     if not self.hyundai_lkas and self.enabled and self.controlsAllowed and not self.timer_start:
       # send car controls over can
-      can_sends = self.CI.apply( CC, self.sm )
+      can_sends = self.CI.apply( CC, self.sm, self.CP )
       self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
 
