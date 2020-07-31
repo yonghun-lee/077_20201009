@@ -37,7 +37,7 @@ def getch():
         termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
     return ch
 
-button_delay = 0.2
+button_delay = 0.3
 
 kyd = kyd_conf()
 kyd.conf['EnableLiveTune'] = "1"
