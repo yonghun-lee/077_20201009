@@ -175,9 +175,9 @@ class SpdctrlFast(SpdController):
                 set_speed = self.cruise_set_speed_kph - 0
                 self.seq_step_debug = 36
                 wait_time_cmd = 100
-                if set_speed > model_speed:
-                   self.seq_step_debug = 37
-                   set_speed = model_speed
+            if set_speed > model_speed:
+                self.seq_step_debug = 37
+                set_speed = model_speed
         elif CS.clu_Vanz >= 70:
             if model_speed < 50: 
                 set_speed = self.cruise_set_speed_kph - 1 
@@ -187,9 +187,9 @@ class SpdctrlFast(SpdController):
                 set_speed = self.cruise_set_speed_kph - 0 
                 self.seq_step_debug = 39
                 wait_time_cmd = 100
-                if set_speed > model_speed:
-                   self.seq_step_debug = 40
-                   set_speed = model_speed
+            if set_speed > model_speed:
+                self.seq_step_debug = 40
+                set_speed = model_speed
         else:
             if set_speed > model_speed:
                 self.seq_step_debug = 41
