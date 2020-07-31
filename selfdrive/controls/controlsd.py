@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+Ôªø#!/usr/bin/env python3
 import os
 import gc
 from cereal import car, log
@@ -433,7 +433,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg1 += ' ƒ¡∆Æ∑—={}'.format( self.controlsAllowed )    
+    log_alertTextMsg1 += ' ƒÅ∆Æ¬∑—Ω{}'.format( self.controlsAllowed )    
     
 
     CC = car.CarControl.new_message()
