@@ -6,7 +6,6 @@ from selfdrive.car.hyundai.values import Buttons, SteerLimitParams, CAR
 from opendbc.can.packer import CANPacker
 from selfdrive.config import Conversions as CV
 from common.numpy_fast import interp
-from selfdrive.kyd_conf import kyd_conf
 
 # speed controller
 from selfdrive.car.hyundai.spdcontroller  import SpdController
@@ -33,9 +32,6 @@ class CarController():
     self.lanechange_manual_timer = 0
     self.emergency_manual_timer = 0
     self.resume_required = False
-
-    self.kyd = kyd_conf()
-    self.lanechange_speed = int(self.kyd.conf['lanechangeSpeed'])
 
     self.steer_mode = ""
     self.mdps_status = ""
@@ -157,7 +153,7 @@ class CarController():
     # disable if steer angle reach 90 deg, otherwise mdps fault in some models
     lkas_active = enabled and abs(CS.out.steeringAngle) < 90.
 
-    if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < self.lanechange_speed * CV.KPH_TO_MS:
+    if (( CS.out.leftBlinker and not CS.out.rightBlinker) or ( CS.out.rightBlinker and not CS.out.leftBlinker)) and CS.out.vEgo < 60 * CV.KPH_TO_MS:
       self.lanechange_manual_timer = 10
     if CS.out.leftBlinker and CS.out.rightBlinker:
       self.emergency_manual_timer = 10
