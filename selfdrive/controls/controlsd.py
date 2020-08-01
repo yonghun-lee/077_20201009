@@ -290,7 +290,7 @@ class Controls:
     elif not self.controlsAllowed:
       self.mismatch_counter += 1
 
-    print( 'controlsAllowed={} self.mismatch_counter={}'.format( self.controlsAllowed, self.mismatch_counter ) )
+    #print( 'controlsAllowed={} self.mismatch_counter={}'.format( self.controlsAllowed, self.mismatch_counter ) )
   
     self.distance_traveled += CS.vEgo * DT_CTRL
 
