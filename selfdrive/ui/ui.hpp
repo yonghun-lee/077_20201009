@@ -144,6 +144,8 @@ typedef struct UIScene {
   int lead_status;
   float lead_d_rel, lead_y_rel, lead_v_rel;  
 
+  char ipAddr[20];
+
   struct _STATUS_
   {
       char text1[512];
