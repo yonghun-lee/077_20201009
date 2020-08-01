@@ -5,8 +5,6 @@ from selfdrive.car.hyundai.values import Ecu, ECU_FINGERPRINT, CAR, FINGERPRINTS
 from selfdrive.car import STD_CARGO_KG, scale_rot_inertia, scale_tire_stiffness, is_ecu_disconnected, gen_empty_fingerprint
 from selfdrive.car.interfaces import CarInterfaceBase, MAX_CTRL_SPEED
 from common.params import Params
-from selfdrive.kyd_conf import kyd_conf
-
 
 EventName = car.CarEvent.EventName
 ButtonType = car.CarState.ButtonEvent.Type
@@ -31,11 +29,10 @@ class CarInterface(CarInterfaceBase):
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
 
-    kyd = kyd_conf()
-    tire_stiffness_factor = float(kyd.conf['tireStiffnessFactor'])  # 1.
-    ret.steerActuatorDelay = float(kyd.conf['steerActuatorDelay'])  # Default delay 0.3
+    tire_stiffness_factor = 1.
+    ret.steerActuatorDelay = 0.3
     ret.steerRateCost = 0.5
-    ret.steerLimitTimer = float(kyd.conf['steerLimitTimer'])  # 0.4
+    ret.steerLimitTimer = 0.4
 
     params = Params()
     if int(params.get('LateralControlMethod')) == 0:

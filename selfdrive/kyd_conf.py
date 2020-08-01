@@ -70,15 +70,6 @@ class kyd_conf():
         self.config.update({"EnableLiveTune":"1"})
         self.element_updated = True
 
-      if "steerMax" not in self.config:
-        self.config.update({"steerMax":"255"})
-        self.config.update({"steerDeltaUp":"3"})
-        self.config.update({"steerDeltaDown":"7"})
-        self.config.update({"steerDriverAllowance":"50"})
-        self.config.update({"steerDriverMultiplier":"2"})
-        self.config.update({"steerDriverFactor":"1"})
-        self.element_updated = True
-
       if "cameraOffset" not in self.config:
         self.config.update({"cameraOffset":"0.06"})
         self.element_updated = True
@@ -97,12 +88,6 @@ class kyd_conf():
         self.config.update({"steerRatio":"-1"})
         self.config.update({"steerRateCost":"-1"})
         self.config.update({"deadzone":"0.0"})
-        self.element_updated = True
-
-      if "tireStiffnessFactor" not in self.config:
-        self.config.update({"tireStiffnessFactor":"1.0"})
-        self.config.update({"steerActuatorDelay":"0.3"})
-        self.config.update({"steerLimitTimer":"0.4"})
         self.element_updated = True
 	
       if "sR_boost" not in self.config:
@@ -130,14 +115,12 @@ class kyd_conf():
         self.write_config(self.config)
 
     else:
-      self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
-      	             "steerDriverAllowance":"50", "steerDriverMultiplier":"2", "steerDriverFactor":"1", \
+      self.config = {"EnableLiveTune":"1", \
       	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", \
       	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
-                     "tireStiffnessFactor":"1.0", "steerActuatorDelay":"0.3", "steerLimitTimer":"0.4", \
                      "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1"}
 
 

@@ -3,19 +3,17 @@
 from cereal import car
 from selfdrive.car import dbc_dict
 from common.params import Params
-from selfdrive.kyd_conf import kyd_conf
 
 Ecu = car.CarParams.Ecu
 
 # Steer torque limits
 class SteerLimitParams:
-  kyd = kyd_conf()
-  STEER_MAX = int(kyd.conf['steerMax'])   # 409 is the max, 255 is stock
-  STEER_DELTA_UP = int(kyd.conf['steerDeltaUp'])  # 3
-  STEER_DELTA_DOWN = int(kyd.conf['steerDeltaDown'])  # 7
-  STEER_DRIVER_ALLOWANCE = int(kyd.conf['steerDriverAllowance'])  # 50
-  STEER_DRIVER_MULTIPLIER = int(kyd.conf['steerDriverMultiplier'])  # 2
-  STEER_DRIVER_FACTOR = int(kyd.conf['steerDriverFactor'])  # 1
+  STEER_MAX = 255   # 409 is the max, 255 is stock
+  STEER_DELTA_UP = 3
+  STEER_DELTA_DOWN = 7
+  STEER_DRIVER_ALLOWANCE = 50
+  STEER_DRIVER_MULTIPLIER = 2
+  STEER_DRIVER_FACTOR = 1
 
 
 class CAR:
