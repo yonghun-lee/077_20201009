@@ -49,7 +49,7 @@ static void ui_draw_sidebar_ip_addr(UIState *s) {
 
   char network_ip_str[15];
   snprintf(network_ip_str, sizeof(network_ip_str), "%s", s->scene.ipAddr);
-  nvgFillColor(s->vg, COLOR_GREEN);
+  nvgFillColor(s->vg, COLOR_WHITE);
   nvgFontSize(s->vg, 34*fFontSize);
   nvgFontFaceId(s->vg, s->font_sans_bold);
   nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_MIDDLE);
