@@ -1,4 +1,4 @@
-const int HYUNDAI_MAX_STEER = 409;             // default=255, comma_max=409, accepted=1024
+const int HYUNDAI_MAX_STEER = 409;             // like stock
 const int HYUNDAI_MAX_RT_DELTA = 112;          // max delta torque allowed for real time checks
 const uint32_t HYUNDAI_RT_INTERVAL = 250000;   // 250ms between real time checks
 const int HYUNDAI_MAX_RATE_UP = 5;
@@ -27,6 +27,8 @@ const CanMsg HYUNDAI_TX_MSGS[] = {
   {905, 0, 8},  //   SCC14,  Bus 0
   {1186, 0, 8},  //   4a2SCC, Bus 0
   {790, 1, 8}, // EMS11, Bus 1
+  {912, 0, 7}, {912,1, 7}, // SPAS11, Bus 0, 1
+  {1268, 0, 8}, {1268,1, 8}, // SPAS12, Bus 0, 1
  };
 
 // TODO: missing checksum for wheel speeds message,worst failure case is
@@ -198,21 +200,21 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       cruise_engaged_prev = cruise_button;
     }
-
+    // exit controls on rising edge of gas press for cars with long control
     gas_pressed = false;
-    // sample subaru wheel speed, averaging opposite corners
-    if ((addr == 902) && (bus == 0)) {
+
+    // sample wheel speed, averaging opposite corners
+    if (addr == 902 && bus == 0) {
       int hyundai_speed = GET_BYTES_04(to_push) & 0x3FFF;  // FL
       hyundai_speed += (GET_BYTES_48(to_push) >> 16) & 0x3FFF;  // RL
       hyundai_speed /= 2;
       vehicle_moving = hyundai_speed > HYUNDAI_STANDSTILL_THRSLD;
     }
-
-
+    // exit controls on rising edge of brake press for cars with long control
     brake_pressed = false;
-    if(bus == 0){
-      generic_rx_checks((addr == 832));
-    }
+
+    generic_rx_checks((addr == 832 && bus == 0));
+  }
   return valid;
 }
 
