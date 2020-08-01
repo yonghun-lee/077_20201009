@@ -120,26 +120,27 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
                               hyundai_get_counter);
   }
 
+  if (valid && ((bus == 0) || (bus == 1) || (bus == 2))) {
   // check if we have a LCAN on Bus1
-  if (bus == 1 && (addr == 1296 || addr == 524)) {
-    if (hyundai_forward_bus1 || !hyundai_LCAN_on_bus1) {
-      hyundai_LCAN_on_bus1 = true;
-      hyundai_forward_bus1 = false;
+    if (bus == 1 && (addr == 1296 || addr == 524)) {
+      if (hyundai_forward_bus1 || !hyundai_LCAN_on_bus1) {
+        hyundai_LCAN_on_bus1 = true;
+        hyundai_forward_bus1 = false;
+     }
     }
-  }
-  if (bus == 1 && hyundai_LCAN_on_bus1) {valid = false;}
 
-  // check if we have a MDPS on Bus1 and LCAN not on the bus
-  if (bus == 1 && (addr == 593 || addr == 897) && !hyundai_LCAN_on_bus1) {
-    if (hyundai_mdps_bus != bus || !hyundai_forward_bus1) {
-      hyundai_mdps_bus = bus;
-      hyundai_forward_bus1 = true;
+    // check if we have a MDPS on Bus1 and LCAN not on the bus
+    if (bus == 1 && (addr == 593 || addr == 897) && !hyundai_LCAN_on_bus1) {
+      if (hyundai_mdps_bus != bus || !hyundai_forward_bus1) {
+        hyundai_mdps_bus = bus;
+        hyundai_forward_bus1 = true;
+      }
     }
-  }
-  // check if we have a SCC on Bus1 and LCAN not on the bus
-  if (bus == 1 && addr == 1057 && !hyundai_LCAN_on_bus1) {
-    if (!hyundai_forward_bus1) {
-      hyundai_forward_bus1 = true;
+    // check if we have a SCC on Bus1 and LCAN not on the bus
+    if (bus == 1 && addr == 1057 && !hyundai_LCAN_on_bus1) {
+      if (!hyundai_forward_bus1) {
+        hyundai_forward_bus1 = true;
+      }
     }
   }
 
@@ -151,7 +152,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
     }
 
     // enter controls on rising edge of ACC, exit controls on ACC off
-    if (addr == 1057 && OP_SCC_live) { // for cars with long control
+    if (addr == 1057 && OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars with long control
       hyundai_has_scc = true;
       car_SCC_live = 50;
       // 2 bits: 13-14
@@ -164,7 +165,7 @@ static int hyundai_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
       }
       cruise_engaged_prev = cruise_engaged;
     }
-    if (addr == 1056 && !OP_SCC_live) { // for cars without long control
+    if (addr == 1056 && !OP_SCC_live && (bus != 1 || !hyundai_LCAN_on_bus1)) { // for cars without long control
       hyundai_has_scc = true;
       // 2 bits: 13-14
       int cruise_engaged = GET_BYTES_04(to_push) & 0x1; // ACC main_on signal
@@ -292,14 +293,14 @@ static int hyundai_tx_hook(CAN_FIFOMailBox_TypeDef *to_send) {
   // ensuring that only the cancel button press is sent (VAL 4) when controls are off.
   // This avoids unintended engagements while still allowing resume spam
   //allow clu11 to be sent to MDPS if MDPS is not on bus0
-  if (addr == 1265 && !controls_allowed && (bus != hyundai_mdps_bus || !hyundai_mdps_bus)) { 
+  if ((addr == 1265) && (!controls_allowed) && ((bus != hyundai_mdps_bus) || (!hyundai_mdps_bus))) { 
     if ((GET_BYTES_04(to_send) & 0x7) != 4) {
       tx = 0;
     }
   }
 
   if (addr == 593) {OP_MDPS_live = 20;}
-  if (addr == 1265 && bus == 1) {OP_CLU_live = 20;} // only count mesage created for MDPS
+  if ((addr == 1265) && bus == 1) {OP_CLU_live = 20;} // only count mesage to mdps
   if (addr == 1057) {OP_SCC_live = 20; if (car_SCC_live > 0) {car_SCC_live -= 1;}}
   if (addr == 790) {OP_EMS_live = 20;}
 
