@@ -110,12 +110,18 @@ class kyd_conf():
         self.config.update({"dc_gain":"-1"})
         self.element_updated = True
 
+      if "steerMax" not in self.config:
+        self.config.update({"steerMax":"255"})
+        self.config.update({"steerDeltaUp":"3"})
+        self.config.update({"steerDeltaDown":"7"})
+        self.element_updated = True
+
       if self.element_updated:
         print("updated")
         self.write_config(self.config)
 
     else:
-      self.config = {"EnableLiveTune":"1", \
+      self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
       	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", \
       	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
