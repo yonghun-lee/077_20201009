@@ -21,7 +21,7 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   values["CF_Lkas_MsgCount"] = frame % 0x10
   values["CF_Lkas_Chksum"] = 0
 
-  if car_fingerprint in [CAR.PALISADE, CAR.SELTOS, CAR.SANTAFE, CAR.GRANDEUR_HEV]:
+  if car_fingerprint in [CAR.PALISADE, CAR.SANTAFE]:
     values["CF_Lkas_Bca_R"] = int(CC.hudControl.leftLaneVisible) + (int(CC.hudControl.rightLaneVisible) << 1)
     values["CF_Lkas_LdwsOpt_USM"] = 2
 
