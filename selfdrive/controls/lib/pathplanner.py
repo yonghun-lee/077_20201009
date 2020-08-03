@@ -1,4 +1,4 @@
-﻿import os
+import os
 import math
 from common.realtime import sec_since_boot, DT_MDL
 from selfdrive.swaglog import cloudlog
