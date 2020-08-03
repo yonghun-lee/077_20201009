@@ -71,6 +71,8 @@ class CarController():
     self.traceCC = trace1.Loger("CarController")
 
     self.sound_trigger = 1
+    env = dict(os.environ)
+    env['LD_LIBRARY_PATH'] = mediaplayer
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
