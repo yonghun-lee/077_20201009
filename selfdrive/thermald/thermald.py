@@ -185,7 +185,6 @@ def thermald_thread():
   cpu_temp_filter = FirstOrderFilter(0., CPU_TEMP_TAU, DT_TRML)
   health_prev = None
   fw_version_match_prev = True
-  current_connectivity_alert = None
   time_valid_prev = True
   should_start_prev = False
   handle_fan = None
@@ -214,8 +213,6 @@ def thermald_thread():
 
   getoff_alert = Params().get('OpkrEnableGetoffAlert') == b'1'
   OpkrAutoShutdown = params.get_OpkrAutoShutdown()
-
-  prebuiltlet = Params().get('PutPrebuiltOn') == b'1'
 
   while 1:
     ts = sec_since_boot()
@@ -449,6 +446,7 @@ def thermald_thread():
          started_seen and OpkrAutoShutdown and (sec_since_boot() - off_ts) > OpkrAutoShutdown:
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
+    prebuiltlet = Params().get('PutPrebuiltOn') == b'1'
     if not os.path.isfile(prebuiltfile) and prebuiltlet:
       os.system("cd /data/openpilot; touch prebuilt")
     elif os.path.isfile(prebuiltfile) and not prebuiltlet:
