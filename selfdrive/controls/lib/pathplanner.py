@@ -7,6 +7,7 @@ from selfdrive.controls.lib.drive_helpers import MPC_COST_LAT
 from selfdrive.controls.lib.lane_planner import LanePlanner
 from selfdrive.config import Conversions as CV
 from common.params import Params
+from common.numpy_fast import interp
 import cereal.messaging as messaging
 from cereal import log
 import common.log as trace1
@@ -56,15 +57,32 @@ class PathPlanner():
     self.LP = LanePlanner()
 
     self.last_cloudlog_t = 0
-    
+    self.steer_rate_cost = CP.steerRateCost
     self.setup_mpc()
     self.solution_invalid_cnt = 0
 
-    self.params = Params()
-    self.kyd = kyd_conf()
+    self.mpc_frame = 0
+    self.sR_delay_counter = 0
+    self.steerRatio_new = 0.0
+    self.sR_time = 1
 
-    self.steer_Ratio = float(self.kyd.conf['steerRatio'])
-    self.steer_rate_cost = float(self.kyd.conf['steerRateCost'])
+    self.params = Params()
+    kyd = kyd_conf(CP)
+    if kyd.conf['steerRatio'] == "-1":
+      self.steerRatio = CP.steerRatio
+    else:
+      self.steerRatio = float(kyd.conf['steerRatio'])
+      
+    if kyd.conf['steerRateCost'] == "-1":
+      self.steer_rate_cost = CP.steerRateCost
+    else:
+      self.steer_rate_cost = float(kyd.conf['steerRateCost'])
+
+    
+    self.sR = [float(kyd.conf['steerRatio']), (float(kyd.conf['steerRatio']) + float(kyd.conf['sR_boost']))]
+    self.sRBP = [float(kyd.conf['sR_BP0']), float(kyd.conf['sR_BP1'])]
+
+    self.steerRateCost_prev = self.steer_rate_cost
 
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
@@ -94,6 +112,9 @@ class PathPlanner():
     self.angle_steers_des_time = 0.0
 
   def update(self, sm, pm, CP, VM):
+  
+    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
+    
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
@@ -110,9 +131,45 @@ class PathPlanner():
     
     curvature_factor = VM.curvature_factor(v_ego)
 
+    if not self.param_OpkrEnableLearner:
+      vCurvature = sm['controlsState'].vCurvature
+      #copied from kegman's code
+      # Get steerRatio and steerRateCost from kyd.json every x seconds
+      self.mpc_frame += 1
+      if self.mpc_frame % 500 == 0:
+        # live tuning through /data/openpilot/tune_pid.py overrides interface.py settings
+        kyd = kyd_conf()
+        if kyd.conf['EnableLiveTuning'] == "1":
+          self.steer_rate_cost = float(kyd.conf['steerRateCost'])
+          if self.steer_rate_cost != self.steerRateCost_prev:
+            self.setup_mpc()
+            self.steerRateCost_prev = self.steer_rate_cost
+            
+          self.sR = [float(kyd.conf['steerRatio']), (float(kyd.conf['steerRatio']) + float(kyd.conf['sR_boost']))]
+          self.sRBP = [float(kyd.conf['sR_BP0']), float(kyd.conf['sR_BP1'])]
+          self.sR_time = int(float(kyd.conf['sR_time']) * 100)
+           
+        self.mpc_frame = 0
+      
+      if v_ego > 30 * CV.KPH_TO_MS:  #속도 30k/m이상에서 sR부스터 활성화
+        # boost steerRatio by boost amount if desired curvature is high
+        self.steerRatio_new = interp(abs(vCurvature), self.sRBP, self.sR) #곡률(vCurvature)에 의한 steerRatio변화
+        #self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #조향각(angle_steers)에 의한 steerRatio변화
+        
+        self.sR_delay_counter += 1
+        if self.sR_delay_counter % self.sR_time != 0:
+          if self.steerRatio_new > self.steerRatio:
+            self.steerRatio = self.steerRatio_new
+        else:
+          self.steerRatio = self.steerRatio_new
+          self.sR_delay_counter = 0
+      else:
+        self.steerRatio = self.sR[0]
+      
+      #print("steerRatio = ", self.steerRatio)
+
     self.LP.parse_model(sm['model'])
 
-    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
 
     # Lane change logic
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
@@ -191,7 +248,7 @@ class PathPlanner():
     if self.param_OpkrEnableLearner:
       self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
     else:
-      self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, self.steer_Ratio, CP.steerActuatorDelay)
+      self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, self.steerRatio, CP.steerActuatorDelay)
     
     v_ego_mpc = max(v_ego, 5.0)  # avoid mpc roughness due to low speed
     self.libmpc.run_mpc(self.cur_state, self.mpc_solution,
@@ -201,21 +258,31 @@ class PathPlanner():
     # reset to current steer angle if not active or overriding
     if active:
       delta_desired = self.mpc_solution[0].delta[1]
-      rate_desired = math.degrees(self.mpc_solution[0].rate[0] * VM.sR)
+      if self.param_OpkrEnableLearner:
+        rate_desired = math.degrees(self.mpc_solution[0].rate[0] * VM.sR)
+      else:
+        rate_desired = math.degrees(self.mpc_solution[0].rate[0] * self.steerRatio)
     else:
-      delta_desired = math.radians(angle_steers - angle_offset) / VM.sR
+      if self.param_OpkrEnableLearner:
+        delta_desired = math.radians(angle_steers - angle_offset) / VM.sR
+      else:
+        delta_desired = math.radians(angle_steers - angle_offset) / self.steerRatio
       rate_desired = 0.0
 
     self.cur_state[0].delta = delta_desired
-
-    self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
-
+    if self.param_OpkrEnableLearner:
+      self.angle_steers_des_mpc = float(math.degrees(delta_desired * VM.sR) + angle_offset)
+    else:
+      self.angle_steers_des_mpc = float(math.degrees(delta_desired * self.steerRatio) + angle_offset)
     #  Check for infeasable MPC solution
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
     t = sec_since_boot()
     if mpc_nans:
-      self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, CP.steerRateCost)
-      self.cur_state[0].delta = math.radians(angle_steers - angle_offset) / VM.sR
+      self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steerRateCost)
+      if self.param_OpkrEnableLearner:
+        self.cur_state[0].delta = math.radians(angle_steers - angle_offset) / VM.sR
+      else:
+        self.cur_state[0].delta = math.radians(angle_steers - angle_offset) / self.steerRatio
 
       if t > self.last_cloudlog_t + 5.0:
         self.last_cloudlog_t = t
