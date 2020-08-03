@@ -449,10 +449,10 @@ def thermald_thread():
          started_seen and OpkrAutoShutdown and (sec_since_boot() - off_ts) > OpkrAutoShutdown:
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
-      #if not os.path.isfile(prebuiltfile) and prebuiltlet:
-      #  os.system("cd /data/openpilot; touch prebuilt")
-      #elif os.path.isfile(prebuiltfile) and not prebuiltlet:
-      #  os.system("cd /data/openpilot; rm -f prebuilt")
+    if not os.path.isfile(prebuiltfile) and prebuiltlet:
+      os.system("cd /data/openpilot; touch prebuilt")
+    elif os.path.isfile(prebuiltfile) and not prebuiltlet:
+      os.system("cd /data/openpilot; rm -f prebuilt")
 
     # Offroad power monitoring
     pm.calculate(health, msg)

@@ -66,7 +66,7 @@ class SpdController():
     def __init__(self, CP=None):
         self.long_control_state = 0  # initialized to off
 
-        self.seq_step_debug = 0
+        self.seq_step_debug = ""
         self.long_curv_timer = 0
 
         self.path_x = np.arange(192)
@@ -238,7 +238,7 @@ class SpdController():
         raise NotImplementedError
 
     def update_log(self, CS, set_speed, target_set_speed, long_wait_cmd ):
-        str3 = 'M={:3.0f} DST={:3.0f} VSD={:.0f} DA={:.0f}/{:.0f}/{:.0f} DG={} DO={:.0f}'.format(
+        str3 = 'M={:3.0f} DST={:3.0f} VSD={:.0f} DA={:.0f}/{:.0f}/{:.0f} DG={:s} DO={:.0f}'.format(
             CS.out.cruiseState.modeSel, target_set_speed, CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer, self.seq_step_debug, CS.driverOverride )
         str4 = ' CS={:.1f}/{:.1f} '.format(  CS.lead_distance, CS.lead_objspd )
         str5 = str3 +  str4
