@@ -1,4 +1,4 @@
-import os
+ï»¿import os
 import math
 from common.realtime import sec_since_boot, DT_MDL
 from selfdrive.swaglog import cloudlog
@@ -151,10 +151,10 @@ class PathPlanner():
            
         self.mpc_frame = 0
       
-      if v_ego > 30 * CV.KPH_TO_MS:  #¼Óµµ 30k/mÀÌ»ó¿¡¼­ sRºÎ½ºÅÍ È°¼ºÈ­
+      if v_ego > 30 * CV.KPH_TO_MS:  #ì†ë„ 30k/mì´ìƒì—ì„œ sRë¶€ìŠ¤í„° í™œì„±í™”
         # boost steerRatio by boost amount if desired curvature is high
-        self.steerRatio_new = interp(abs(vCurvature), self.sRBP, self.sR) #°î·ü(vCurvature)¿¡ ÀÇÇÑ steerRatioº¯È­
-        #self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #Á¶Çâ°¢(angle_steers)¿¡ ÀÇÇÑ steerRatioº¯È­
+        self.steerRatio_new = interp(abs(vCurvature), self.sRBP, self.sR) #ê³¡ë¥ (vCurvature)ì— ì˜í•œ steerRatioë³€í™”
+        #self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #ì¡°í–¥ê°(angle_steers)ì— ì˜í•œ steerRatioë³€í™”
         
         self.sR_delay_counter += 1
         if self.sR_delay_counter % self.sR_time != 0:
