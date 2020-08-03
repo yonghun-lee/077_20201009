@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import os.path
 import json
 import copy
 import datetime
@@ -449,9 +450,9 @@ def thermald_thread():
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
 
       if not os.path.isfile(prebuiltfile) and prebuiltlet:
-        os.system('LD_LIBRARY_PATH="" cd /data/openpilot; touch prebuilt')
+        os.system("cd /data/openpilot; touch prebuilt")
       elif os.path.isfile(prebuiltfile) and not prebuiltlet:
-        os.system('LD_LIBRARY_PATH="" cd /data/openpilot; rm -f prebuilt')
+        os.system("cd /data/openpilot; rm -f prebuilt")
 
     # Offroad power monitoring
     pm.calculate(health, msg)
