@@ -72,8 +72,6 @@ class CarController():
     self.traceCC = trace1.Loger("CarController")
 
     self.sound_trigger = 1
-    env = dict(os.environ)
-    env['LD_LIBRARY_PATH'] = mediaplayer
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
@@ -212,6 +210,9 @@ class CarController():
     str_log2 = '프레임율={:>3.0f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
     
+    env = dict(os.environ)
+    env['LD_LIBRARY_PATH'] = mediaplayer
+
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
     if not run_speed_ctrl:
       if CS.out.cruiseState.modeSel == 0:
