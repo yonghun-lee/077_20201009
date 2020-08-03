@@ -38,6 +38,8 @@ last_eon_fan_val = None
 
 mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
 
+prebuiltfile = '/data/openpilot/prebuilt'
+
 with open(BASEDIR + "/selfdrive/controls/lib/alerts_offroad.json") as json_file:
   OFFROAD_ALERTS = json.load(json_file)
 
@@ -211,6 +213,8 @@ def thermald_thread():
 
   getoff_alert = Params().get('OpkrEnableGetoffAlert') == b'1'
   OpkrAutoShutdown = params.get_OpkrAutoShutdown()
+
+  prebuiltlet = Params().get('PutPrebuiltOn') == b'1'
 
   while 1:
     ts = sec_since_boot()
@@ -443,6 +447,11 @@ def thermald_thread():
       if msg.thermal.batteryPercent <= BATT_PERC_OFF and msg.thermal.batteryStatus == "Discharging" and \
          started_seen and OpkrAutoShutdown and (sec_since_boot() - off_ts) > OpkrAutoShutdown:
         os.system('LD_LIBRARY_PATH="" svc power shutdown')
+
+      if not os.path.isfile(prebuiltfile) and prebuiltlet:
+        os.system('LD_LIBRARY_PATH="" cd /data/openpilot; touch prebuilt')
+      elif os.path.isfile(prebuiltfile) and not prebuiltlet:
+        os.system('LD_LIBRARY_PATH="" cd /data/openpilot; rm -f prebuilt')
 
     # Offroad power monitoring
     pm.calculate(health, msg)

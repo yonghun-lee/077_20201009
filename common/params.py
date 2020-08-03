@@ -124,6 +124,7 @@ keys = {
   "OpkrRunSoftkey": [TxType.PERSISTENT],
   "OpkrRunNavigation": [TxType.PERSISTENT],
   "OpkrBootNavigation": [TxType.PERSISTENT],
+  "PutPrebuiltOn": [TxType.PERSISTENT],
   "FingerprintIssuedFix": [TxType.PERSISTENT],
   "LdwsCarFix": [TxType.PERSISTENT],
   "LateralControlMethod": [TxType.PERSISTENT],

@@ -581,6 +581,7 @@ def main():
     ("OpkrRunSoftkey", "0"),
     ("OpkrRunNavigation", "0"),
     ("OpkrBootNavigation", "0"),
+    ("PutPrebuiltOn", "0"),
     ("FingerprintIssuedFix", "0"),
     ("LdwsCarFix", "0"),
     ("LateralControlMethod", "0"),
