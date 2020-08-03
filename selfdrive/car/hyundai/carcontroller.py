@@ -201,9 +201,9 @@ class CarController():
       if CS.out.cruiseState.modeSel == 0:
         self.steer_mode = "오파모드"
       elif CS.out.cruiseState.modeSel == 1:
-        self.steer_mode = "커브제어"
+        self.steer_mode = "차간+커브"
       elif CS.out.cruiseState.modeSel == 2:
-        self.steer_mode = "차간제어"
+        self.steer_mode = "차간ONLY"
       elif CS.out.cruiseState.modeSel == 3:
         self.steer_mode = "순정모드"
       if CS.out.steerWarning == 0:

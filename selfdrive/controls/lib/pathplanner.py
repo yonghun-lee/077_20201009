@@ -10,6 +10,7 @@ from common.params import Params
 import cereal.messaging as messaging
 from cereal import log
 import common.log as trace1
+from selfdrive.kyd_conf import kyd_conf
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
@@ -55,12 +56,15 @@ class PathPlanner():
     self.LP = LanePlanner()
 
     self.last_cloudlog_t = 0
-    self.steer_rate_cost = CP.steerRateCost
-
+    
     self.setup_mpc()
     self.solution_invalid_cnt = 0
 
     self.params = Params()
+    self.kyd = kyd_conf()
+
+    self.steer_Ratio = float(self.kyd.conf['steerRatio'])
+    self.steer_rate_cost = float(self.kyd.conf['steerRateCost'])
 
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
@@ -107,6 +111,8 @@ class PathPlanner():
     curvature_factor = VM.curvature_factor(v_ego)
 
     self.LP.parse_model(sm['model'])
+
+    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
 
     # Lane change logic
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
@@ -182,8 +188,10 @@ class PathPlanner():
     self.LP.update_d_poly(v_ego)
 
     # account for actuation delay
-    #self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, CP.steerRatio, CP.steerActuatorDelay)
-    self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
+    if self.param_OpkrEnableLearner:
+      self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, VM.sR, CP.steerActuatorDelay)
+    else:
+      self.cur_state = calc_states_after_delay(self.cur_state, v_ego, angle_steers - angle_offset, curvature_factor, self.steer_Ratio, CP.steerActuatorDelay)
     
     v_ego_mpc = max(v_ego, 5.0)  # avoid mpc roughness due to low speed
     self.libmpc.run_mpc(self.cur_state, self.mpc_solution,
