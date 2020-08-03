@@ -14,6 +14,7 @@ from selfdrive.car.hyundai.spdctrlNormal  import SpdctrlNormal
 from selfdrive.car.hyundai.spdctrlFast  import SpdctrlFast
 
 from common.params import Params
+from selfdrive.kyd_conf import kyd_conf
 import common.log as trace1
 import common.CTime1000 as tm
 
@@ -64,6 +65,17 @@ class CarController():
     self.SC = None
     self.traceCC = trace1.Loger("CarController")
 
+    # 곡률에 의한 steermax 값 튜닝
+    kyd = kyd_conf()
+    self.stMax = [int(kyd.conf['steerMax']), (int(kyd.conf['steerMax']) + int(kyd.conf['stMax_boost']))]
+    self.stBP = [int(kyd.conf['st_BP0']), int(kyd.conf['st_BP1'])]
+
+    self.mpc_frame = 0
+    self.st_delay_counter = 0
+    self.steerMax_new = 0
+    self.st_time = 1
+    self.steerMax = SteerLimitParams.STEER_MAX
+
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
     left_lane = CC.hudControl.leftLaneVisible
@@ -112,7 +124,9 @@ class CarController():
       self.param_OpkrAutoResume = int(self.params.get('OpkrAutoResume'))
     else:
       self.command_load = 0
-      
+    
+    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
+
     # speed controller
     if self.param_preOpkrAccelProfile != self.param_OpkrAccelProfile:
       self.param_preOpkrAccelProfile = self.param_OpkrAccelProfile
@@ -125,6 +139,7 @@ class CarController():
 
 
   def update(self, CC, CS, frame, sm, CP ):
+
     if self.CP != CP:
       self.CP = CP
 
@@ -141,8 +156,41 @@ class CarController():
     else:
       self.model_speed = self.model_sum = 0
 
+
+    if not self.param_OpkrEnableLearner:
+      #referred to kegman's code
+      self.mpc_frame += 1
+      if self.mpc_frame % 500 == 0:
+        kyd = kyd_conf()
+        if kyd.conf['EnableLiveTuning'] == "1":
+          self.stMax = [int(kyd.conf['steerMax']), (int(kyd.conf['steerMax']) + int(kyd.conf['stMax_boost']))]
+          self.stBP = [int(kyd.conf['st_BP0']), int(kyd.conf['st_BP1'])]
+          self.st_time = int(float(kyd.conf['st_time']) * 100)
+           
+        self.mpc_frame = 0
+      
+      if CS.out.vEgo > 30 * CV.KPH_TO_MS:  #속도 30k/m이상에서 steerMax부스터 활성화
+        self.steerMax_new = interp(self.model_speed, self.stBP, self.stMax) #곡률(model_speed)에 의한 steerMax변화
+        #self.steerMax_new = interp(abs(CS.out.steeringAngle), self.stBP, self.stMax) #조향각(steeringAngle)에 의한 steerMax변화
+        
+        self.st_delay_counter += 1
+        if self.st_delay_counter % self.st_time != 0:
+          if self.steerMax_new > self.steerMax:
+            self.steerMax = self.steerMax_new
+        else:
+          self.steerMax = self.steerMax_new
+          self.st_delay_counter = 0
+      else:
+        self.steerMax = self.stMax[0]
+      
+      #print("steerMax = ", self.steerMax)
+
+
     # Steering Torque
-    new_steer = actuators.steer * SteerLimitParams.STEER_MAX
+    if not self.param_OpkrEnableLearner:
+      new_steer = actuators.steer * self.steerMax
+    else:
+      new_steer = actuators.steer * SteerLimitParams.STEER_MAX
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
     self.steer_rate_limited = new_steer != apply_steer
 

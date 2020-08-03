@@ -95,6 +95,8 @@ class PathPlanner():
     self.lane_change_ll_prob = 1.0
     self.prev_one_blinker = False
 
+    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
+
   def setup_mpc(self):
     self.libmpc = libmpc_py.libmpc
     self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
@@ -113,8 +115,6 @@ class PathPlanner():
 
   def update(self, sm, pm, CP, VM):
   
-    self.param_OpkrEnableLearner = int(self.params.get('OpkrEnableLearner'))
-    
     v_ego = sm['carState'].vEgo
     angle_steers = sm['carState'].steeringAngle
     active = sm['controlsState'].active
