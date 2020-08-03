@@ -17,13 +17,6 @@ from common.params import Params
 import common.log as trace1
 import common.CTime1000 as tm
 
-import os
-import re
-import subprocess
-
-mediaplayer = '/data/openpilot/selfdrive/kyd/mediaplayer/'
-
-
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 LaneChangeState = log.PathPlan.LaneChangeState
 
@@ -70,8 +63,6 @@ class CarController():
 
     self.SC = None
     self.traceCC = trace1.Loger("CarController")
-
-    self.sound_trigger = 1
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
@@ -143,11 +134,8 @@ class CarController():
     actuators = CC.actuators
     pcm_cancel_cmd = CC.cruiseControl.cancel
     
-    path_plan = sm['pathPlan']
-
-    abs_angle_steers =  abs(actuators.steerAngle)
-
     self.dRel, self.yRel, self.vRel = SpdController.get_lead( sm )
+
     if self.SC is not None:
       self.model_speed, self.model_sum = self.SC.calc_va(  sm, CS.out.vEgo  )
     else:
@@ -204,37 +192,20 @@ class CarController():
     #if CS.mdps_bus:
     can_sends.append(create_mdps12(self.packer, frame, CS.mdps12))                                   
 
-
-
-    str_log1 = '곡률={:>4.1f}/{:=+6.3f}  차량토크={:=+4.0f}  조향토크={:=+4.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
-    str_log2 = '프레임율={:>3.0f}'.format( self.timer1.sampleTime() )
+    str_log1 = '곡률={:04.1f}/{:=+06.3f}  차량토크={:=+04.0f}  조향토크={:=+04.0f}'.format(  self.model_speed, self.model_sum, new_steer, CS.out.steeringTorque )
+    str_log2 = '프레임율={:03.0f}'.format( self.timer1.sampleTime() )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
-    
-    env = dict(os.environ)
-    env['LD_LIBRARY_PATH'] = mediaplayer
 
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None
     if not run_speed_ctrl:
       if CS.out.cruiseState.modeSel == 0:
         self.steer_mode = "오파모드"
-        if self.sound_trigger == 0:
-          subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/mode_openpilot.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-          self.sound_trigger = 1
       elif CS.out.cruiseState.modeSel == 1:
         self.steer_mode = "커브제어"
-        if self.sound_trigger == 1:
-          subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/mode_curv.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-          self.sound_trigger = 2
       elif CS.out.cruiseState.modeSel == 2:
         self.steer_mode = "차간제어"
-        if self.sound_trigger == 2:
-          subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/mode_distance.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-          self.sound_trigger = 3
       elif CS.out.cruiseState.modeSel == 3:
         self.steer_mode = "순정모드"
-        if self.sound_trigger == 3:
-          subprocess.Popen([mediaplayer + 'mediaplayer', '/data/openpilot/selfdrive/assets/sounds/mode_stock.wav'], shell = False, stdin=None, stdout=None, stderr=None, env = env, close_fds=True)
-          self.sound_trigger = 0
       if CS.out.steerWarning == 0:
         self.mdps_status = "정상"
       elif CS.out.steerWarning == 1:
