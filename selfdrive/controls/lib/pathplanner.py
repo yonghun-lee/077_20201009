@@ -139,7 +139,7 @@ class PathPlanner():
       if self.mpc_frame % 500 == 0:
         # live tuning through /data/openpilot/tune_pid.py overrides interface.py settings
         kyd = kyd_conf()
-        if kyd.conf['EnableLiveTuning'] == "1":
+        if kyd.conf['EnableLiveTune'] == "1":
           self.steer_rate_cost = float(kyd.conf['steerRateCost'])
           if self.steer_rate_cost != self.steerRateCost_prev:
             self.setup_mpc()

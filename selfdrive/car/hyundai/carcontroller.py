@@ -163,7 +163,7 @@ class CarController():
       self.mpc_frame += 1
       if self.mpc_frame % 500 == 0:
         kyd = kyd_conf()
-        if kyd.conf['EnableLiveTuning'] == "1":
+        if kyd.conf['EnableLiveTune'] == "1":
           self.stMax = [int(kyd.conf['steerMax']), (int(kyd.conf['steerMax']) + int(kyd.conf['stMax_boost']))]
           self.stBP = [int(kyd.conf['st_BP0']), int(kyd.conf['st_BP1'])]
           self.st_time = int(float(kyd.conf['st_time']) * 100)
