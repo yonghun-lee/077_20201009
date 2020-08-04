@@ -177,6 +177,8 @@ class SpdctrlFast(SpdController):
         elif CS.out.cruiseState.modeSel == 2:
             self.steer_mode = "차간ONLY"
         elif CS.out.cruiseState.modeSel == 3:
+            self.steer_mode = "자동RES"
+        elif CS.out.cruiseState.modeSel == 4:
             self.steer_mode = "순정모드"
         str3 = '주행모드={:s}  설정속도={:03.0f}/{:03.0f}  타이머={:03.0f}/{:03.0f}/{:03.0f}'.format( self.steer_mode,
             set_speed,  CS.VSetDis, CS.driverAcc_time, long_wait_cmd, self.long_curv_timer )
