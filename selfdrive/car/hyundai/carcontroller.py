@@ -296,7 +296,7 @@ class CarController():
 
     if (CS.out.brakePressed or Buttons.CANCEL) and CS.VSetDis > 30:
       self.res_button = 1
-    elif self.res_button == 1 and CS.out.gasPressed and CS.out.cruiseState.available and CS.out.vEgo > 30 * CV.KPH_TO_MS and CS.VSetDis:
+    elif self.res_button == 1 and CS.out.gasPressed and CS.out.cruiseState.available and CS.out.vEgo > 30 * CV.KPH_TO_MS and CS.VSetDis and CS.lead_distance:
       can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
       self.res_button = 0
 
