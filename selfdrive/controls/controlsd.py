@@ -158,7 +158,7 @@ class Controls:
 
   def auto_enable(self, CS):
     if self.state != State.enabled and CS.vEgo >= 15 * CV.KPH_TO_MS and CS.gearShifter == 2:
-      if self.timer_start and self.sm.all_alive_and_valid() and self.enabled != self.controlsAllowed:
+      if self.sm.all_alive_and_valid() and self.enabled != self.controlsAllowed:
         self.events.add( EventName.pcmEnable )
 
   def update_events(self, CS):
