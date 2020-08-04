@@ -137,6 +137,7 @@ class CarInterfaceBase():
       if cs_out.cruiseState.enabled:
         events.add(EventName.pcmEnable)
       else:
+        pass
         #events.add(EventName.pcmDisable)
       self.cruise_enabled_prev = cs_out.cruiseState.enabled    
 
