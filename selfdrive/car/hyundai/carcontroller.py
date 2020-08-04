@@ -299,6 +299,8 @@ class CarController():
       can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, int(CS.VSetDis)))
       self.res_button = 0
 
+    print('brake={} VsetDis={} res_button={} gasPressed={} cruise_state={}'.format(CS.out.brakePressed, CS.VSetDis, self.res_button, CS.out.gasPressed, CS.out.cruiseState.available))
+
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in FEATURES["send_lfa_mfa"]:
       can_sends.append(create_lfa_mfa(self.packer, frame, enabled))
