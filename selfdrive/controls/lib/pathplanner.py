@@ -132,7 +132,6 @@ class PathPlanner():
     curvature_factor = VM.curvature_factor(v_ego)
 
     if not self.param_OpkrEnableLearner:
-      vCurvature = sm['controlsState'].vCurvature
       #copied from kegman's code
       # Get steerRatio and steerRateCost from kyd.json every x seconds
       self.mpc_frame += 1
@@ -153,8 +152,7 @@ class PathPlanner():
       
       if v_ego > 30 * CV.KPH_TO_MS:  #속도 30k/m이상에서 sR부스터 활성화
         # boost steerRatio by boost amount if desired curvature is high
-        self.steerRatio_new = interp(abs(vCurvature), self.sRBP, self.sR) #곡률(vCurvature)에 의한 steerRatio변화
-        #self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #조향각(angle_steers)에 의한 steerRatio변화
+        self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #조향각(angle_steers)에 의한 steerRatio변화
         
         self.sR_delay_counter += 1
         if self.sR_delay_counter % self.sR_time != 0:
@@ -166,7 +164,7 @@ class PathPlanner():
       else:
         self.steerRatio = self.sR[0]
       
-      print("steerRatio ={} vCurv={} ", self.steerRatio, vCurvature)
+      print("steerRatio ={} vCurv={} ", self.steerRatio, curvature_factor)
 
     self.LP.parse_model(sm['model'])
 
