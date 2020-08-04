@@ -17,6 +17,8 @@
 #include "common/utilpp.h"
 #include "ui.hpp"
 
+#include "dashcam.h"
+
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -175,10 +177,10 @@ static int write_param_float(float param, const char* param_name, bool persisten
 static void ui_init(UIState *s) {
 
   pthread_mutex_init(&s->lock, NULL);
-  s->sm = new SubMaster({"model", "controlsState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
-                         "health", "ubloxGnss", "driverState", "dMonitoringState"
+  s->sm = new SubMaster({"model", "controlsState", "carState", "uiLayoutState", "liveCalibration", "radarState", "thermal",
+                         "health", "ubloxGnss", "driverState", "dMonitoringState", "liveParameters"
 #ifdef SHOW_SPEEDLIMIT
-                                    , "liveMapData"
+                          , "liveMapData"
 #endif
   });
   s->pm = new PubMaster({"offroadLayout"});
@@ -295,6 +297,8 @@ void handle_message(UIState *s, SubMaster &sm) {
     s->controls_timeout = 1 * UI_FREQ;
     scene.frontview = scene.controls_state.getRearViewCam();
     if (!scene.frontview){ s->controls_seen = true; }
+
+    scene.v_ego = scene.controls_state.getVEgo();
 
     auto alert_sound = scene.controls_state.getAlertSound();
     if (scene.alert_type.compare(scene.controls_state.getAlertType()) != 0) {
@@ -420,6 +424,28 @@ void handle_message(UIState *s, SubMaster &sm) {
     scene.is_rhd = data.getIsRHD();
     s->preview_started = data.getIsPreview();
   }
+  if (sm.updated("carState")) {
+    auto data = sm["carState"].getCarState();
+    scene.brakePress = data.getBrakePressed();
+    scene.brakeLights = data.getBrakeLights();
+
+    scene.leftBlinker = data.getLeftBlinker();
+    scene.rightBlinker = data.getRightBlinker();
+    scene.getGearShifter = data.getGearShifter();
+  }
+  if ( sm.updated("liveParameters") )
+  {
+    auto data = sm["liveParameters"].getLiveParameters();
+
+    scene.live.gyroBias = data.getGyroBias();
+    scene.live.angleOffset = data.getAngleOffset();
+    scene.live.angleOffsetAverage = data.getAngleOffsetAverage();
+    scene.live.stiffnessFactor = data.getStiffnessFactor();
+    scene.live.steerRatio = data.getSteerRatio();
+    scene.live.yawRate = data.getYawRate();
+    scene.live.posenetSpeed = data.getPosenetSpeed();
+  }
+
 
   s->started = scene.thermal.getStarted() || s->preview_started;
   // Handle onroad/offroad transition
@@ -869,6 +895,7 @@ int main(int argc, char* argv[]) {
 
     // Don't waste resources on drawing in case screen is off
     if (s->awake) {
+      dashcam(s, touch_x, touch_y);
       ui_draw(s);
       glFinish();
       should_swap = true;
@@ -880,10 +907,21 @@ int main(int argc, char* argv[]) {
       s->controls_timeout--;
     } else if (s->started) {
       if (!s->controls_seen) {
-        // car is started, but controlsState hasn't been seen at all
-        s->scene.alert_text1 = "openpilot Unavailable";
-        s->scene.alert_text2 = "Waiting for controls to start";
-        s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+        int  IsOpenpilotViewEnabled = 0;
+        ui_get_params( "IsDriverViewEnabled", &IsOpenpilotViewEnabled );
+        if( !IsOpenpilotViewEnabled )
+        {
+          // car is started, but controlsState hasn't been seen at all
+          s->scene.alert_text1 = "openpilot Unavailable";
+          s->scene.alert_text2 = "Waiting for controls to start";
+          s->scene.alert_size = cereal::ControlsState::AlertSize::MID;
+        }
+        else
+        {
+          s->controls_timeout = 5 * UI_FREQ;
+          s->scene.alert_size = cereal::ControlsState::AlertSize::NONE;
+        }
+        
       } else {
         // car is started, but controls is lagging or died
         LOGE("Controls unresponsive");

@@ -141,16 +141,40 @@ typedef struct UIScene {
   float angleSteersDes;  
 
   int  engaged;
+  float v_ego;
+
+
   int lead_status;
-  float lead_d_rel, lead_y_rel, lead_v_rel;  
+  float lead_d_rel, lead_y_rel, lead_v_rel;
+
+  bool  brakePress;
+  bool  brakeLights;
+  bool  leftBlinker;
+  bool  rightBlinker;
 
   char ipAddr[20];
+
+
+  cereal::CarState::GearShifter  getGearShifter;  
+
+  struct _LIVE_PARAM
+  {
+    float gyroBias;
+    float angleOffset;
+    float angleOffsetAverage;
+    float stiffnessFactor;
+    float steerRatio;
+    float yawRate;
+    float posenetSpeed;
+  } live;
+
 
   struct _STATUS_
   {
       char text1[512];
       char text2[512];
   } alert;
+
 } UIScene;
 
 typedef struct {
