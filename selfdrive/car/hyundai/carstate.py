@@ -99,7 +99,7 @@ class CarState(CarStateBase):
     self.acc_active = (cp_scc.vl["SCC12"]['ACCMode'] != 0)    # 1057
     self.update_atom( cp, cp2, cp_cam )
 
-    ret.cruiseState.available = self.main_on and self.cruiseState_modeSel != 3
+    ret.cruiseState.available = self.main_on and self.cruiseState_modeSel != 4
     ret.cruiseState.enabled =  ret.cruiseState.available
     ret.cruiseState.standstill = cp_scc.vl["SCC11"]['SCCInfoDisplay'] == 4.
     

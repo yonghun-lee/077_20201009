@@ -258,6 +258,8 @@ class CarController():
       elif CS.out.cruiseState.modeSel == 2:
         self.steer_mode = "차간ONLY"
       elif CS.out.cruiseState.modeSel == 3:
+        self.steer_mode = "자동RES"
+      elif CS.out.cruiseState.modeSel == 4:
         self.steer_mode = "순정모드"
       if CS.out.steerWarning == 0:
         self.mdps_status = "정상"
@@ -293,6 +295,12 @@ class CarController():
       if is_sc_run:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
         self.last_resume_frame = frame
+
+    if CS.out.brakePressed and CS.VSetDis > 30 and CS.out.cruiseState.modeSel == 3:
+      self.res_button = 1
+    elif self.res_button == 1 and CS.out.cruiseState.available and CS.VSetDis and CS.out.cruiseState.modeSel == 3:
+      can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
+      self.res_button = 0
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in FEATURES["send_lfa_mfa"]:
