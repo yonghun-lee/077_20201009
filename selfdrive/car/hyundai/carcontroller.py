@@ -28,6 +28,7 @@ class CarController():
     self.car_fingerprint = CP.carFingerprint
     self.packer = CANPacker(dbc_name)
     self.steer_rate_limited = False
+    self.resume_cnt = 0
     self.last_resume_frame = 0
     self.last_lead_distance = 0
     self.lanechange_manual_timer = 0
@@ -280,21 +281,29 @@ class CarController():
     if pcm_cancel_cmd and self.CP.openpilotLongitudinalControl:
       can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
     elif CS.out.cruiseState.standstill:
+      # run only first time when the car stopped
       if self.last_lead_distance == 0 or not self.param_OpkrAutoResume:
         # get the lead distance from the Radar
         self.last_lead_distance = CS.lead_distance
-      # SCC won't resume anyway when the lead distace is less than 3.7m
-      # send resume at a max freq of 5Hz
-      #if CS.lead_distance > 3.7 and (frame - self.last_resume_frame)*DT_CTRL > 0.2:
-      if CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame)*DT_CTRL > 0.2:
+        self.resume_cnt = 0
+      # when lead car starts moving, create 6 RES msgs
+      elif CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame) > 5:
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, clu11_speed))
-        self.last_resume_frame = frame
-        self.last_lead_distance = CS.lead_distance
+        self.resume_cnt += 1
+        # interval after 6 msgs
+        if self.resume_cnt > 5:
+          self.last_resume_frame = frame
+          self.resume_cnt = 0
+    # reset lead distnce after the car starts moving
+    elif self.last_lead_distance != 0:
+      self.last_lead_distance = 0
     elif run_speed_ctrl and self.SC != None:
       is_sc_run = self.SC.update( CS, sm, self )
       if is_sc_run:
-        can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
-        self.last_resume_frame = frame
+        can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
+        self.resume_cnt += 1
+      else:
+        self.resume_cnt = 0
 
     if CS.out.brakePressed and CS.VSetDis > 30 and CS.out.cruiseState.modeSel == 3:
       self.res_button = 1
