@@ -153,22 +153,13 @@ class Controls:
     self.hyundai_lkas = self.read_only  #read_only
 
     self.controlsAllowed = 0
-    self.timer_alloowed = 1500
+    self.timer_allowed = 1500
     self.timer_start = 1500
 
   def auto_enable(self, CS):
-    if self.startup_event != None:
-      self.timer_alloowed = 500
-    elif not self.controlsAllowed or self.hyundai_lkas or CS.vEgo < 15*CV.KPH_TO_MS or CS.gearShifter != 2:
-      if self.timer_alloowed < 100:
-        self.timer_alloowed = 100
-    elif self.enabled != self.controlsAllowed and self.state != State.enabled:
-      if self.timer_alloowed:
-        self.timer_alloowed -= 1
-      else:
-        self.timer_alloowed = 500
+    if self.state != State.enabled and CS.vEgo >= 15 * CV.KPH_TO_MS and CS.gearShifter == 2:
+      if self.timer_start and self.sm.all_alive_and_valid() and self.enabled != self.controlsAllowed:
         self.events.add( EventName.pcmEnable )
-
 
   def update_events(self, CS):
     """Compute carEvents from carState"""

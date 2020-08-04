@@ -169,9 +169,11 @@ class CarController():
           self.st_time = int(float(kyd.conf['st_time']) * 100)
            
         self.mpc_frame = 0
+
+      self.model_speed_new = abs(255 - self.model_speed)
       
       if CS.out.vEgo > 30 * CV.KPH_TO_MS:  #속도 30k/m이상에서 steerMax부스터 활성화
-        self.steerMax_new = interp(self.model_speed, self.stBP, self.stMax) #곡률(model_speed)에 의한 steerMax변화
+        self.steerMax_new = interp(self.model_speed_new, self.stBP, self.stMax) #곡률(model_speed)에 의한 steerMax변화
         #self.steerMax_new = interp(abs(CS.out.steeringAngle), self.stBP, self.stMax) #조향각(steeringAngle)에 의한 steerMax변화
         
         self.st_delay_counter += 1
@@ -184,7 +186,7 @@ class CarController():
       else:
         self.steerMax = self.stMax[0]
       
-      #print("steerMax = ", self.steerMax)
+      print("steerMax = ", self.steerMax)
 
 
     # Steering Torque

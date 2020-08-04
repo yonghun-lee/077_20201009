@@ -166,7 +166,7 @@ class PathPlanner():
       else:
         self.steerRatio = self.sR[0]
       
-      #print("steerRatio = ", self.steerRatio)
+      print("steerRatio = ", self.steerRatio)
 
     self.LP.parse_model(sm['model'])
 
