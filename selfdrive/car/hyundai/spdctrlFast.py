@@ -7,7 +7,7 @@ from selfdrive.car.hyundai.spdcontroller  import SpdController
 import common.log as trace1
 
 
-class SpdctrlNormal(SpdController):
+class SpdctrlFast(SpdController):
     def __init__(self, CP=None):
         super().__init__( CP )
         self.cv_Raio = 0.5
