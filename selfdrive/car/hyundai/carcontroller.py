@@ -78,7 +78,8 @@ class CarController():
     self.st_time = 1
     self.steerMax = SteerLimitParams.STEER_MAX
 
-    self.res_button = 0
+    self.res_cnt = 5
+    self.res_delay = 0
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
@@ -306,10 +307,16 @@ class CarController():
         self.resume_cnt = 0
 
     if CS.out.brakePressed and CS.VSetDis > 30 and CS.out.cruiseState.modeSel == 3:
-      self.res_button = 1
-    elif self.res_button == 1 and CS.out.cruiseState.available and CS.VSetDis and CS.out.cruiseState.modeSel == 3:
+      self.res_cnt = 0
+      self.res_delay = 50
+    elif not CS.out.brakePressed and self.res_delay:
+      self.res_delay -= 1
+    elif not CS.out.brakePressed and not self.res_delay and self.res_cnt < 6 and CS.out.cruiseState.available and CS.VSetDis and CS.out.cruiseState.modeSel == 3:
       can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
-      self.res_button = 0
+      self.res_cnt += 1
+    else:
+      self.res_cnt = 7
+      self.res_delay = 0
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in FEATURES["send_lfa_mfa"]:
