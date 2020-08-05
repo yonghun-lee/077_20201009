@@ -223,7 +223,7 @@ class SpdController():
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
-                time = 50
+                time = 100
         else:
             if delta_speed < -safety_dis:
                 time = 100
@@ -299,7 +299,7 @@ class SpdController():
             set_speed = CS.VSetDis - dec_step_cmd
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1 and (model_speed > 70 or CS.clu_Vanz < 70):
+        elif delta >= 1 # and (model_speed > 50 or CS.clu_Vanz < 70):
             set_speed = CS.VSetDis + dec_step_cmd
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
