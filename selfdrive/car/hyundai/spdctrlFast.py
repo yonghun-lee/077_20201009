@@ -56,7 +56,7 @@ class SpdctrlFast(SpdController):
             self.seq_step_debug = "감속(-4)"
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -4)    
         # 1. 거리 유지.
-        elif d_delta < 0:
+        elif d_delta < 0 and CS.clu_Vanz > 40:
             # 선행 차량이  기준 유지거리보다 더 가까이 있으면.
             self.seq_step_debug = "앞차가까움"
             if lead_objspd >= 0:    # 속도 유지 시점 결정.
