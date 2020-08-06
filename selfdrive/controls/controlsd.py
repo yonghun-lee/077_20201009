@@ -424,7 +424,7 @@ class Controls:
 
     log_alertTextMsg1 = trace1.global_alertTextMsg1
     log_alertTextMsg2 = trace1.global_alertTextMsg2
-    log_alertTextMsg1 += '  제어:{}  배터리:{}%'.format( self.CP.lateralTuning.which(), self.sm['thermal'].batteryPercent )
+    log_alertTextMsg1 += '  제어={}  배터리={}%'.format( self.CP.lateralTuning.which(), self.sm['thermal'].batteryPercent )
     
 
     CC = car.CarControl.new_message()

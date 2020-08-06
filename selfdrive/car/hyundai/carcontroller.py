@@ -273,7 +273,10 @@ class CarController():
         self.lkas_switch = "ON"
       else:
         self.lkas_switch = "-"
-      str_log2 = '주행모드={:s}  MDPS상태={:s}  LKAS버튼={:s}'.format( self.steer_mode, self.mdps_status, self.lkas_switch )
+      if CS.out.cruiseState.modeSel == 3:
+        str_log2 = '주행모드={:s}  MDPS상태={:s}  LKAS버튼={:s}  AUTORES=(VS:{:03.0f}/CN:{:01.0f}/RD:{:03.0f}/BK:{})'.format( self.steer_mode, self.mdps_status, self.lkas_switch, CS.VSetDis, self.res_cnt, self.res_delay, CS.out.brakeLights )
+      else:
+        str_log2 = '주행모드={:s}  MDPS상태={:s}  LKAS버튼={:s}'.format( self.steer_mode, self.mdps_status, self.lkas_switch )
       trace1.printf2( '{}'.format( str_log2 ) )
 
     #print( 'st={} cmd={} long={}  steer={} req={}'.format(CS.out.cruiseState.standstill, pcm_cancel_cmd, self.CP.openpilotLongitudinalControl, apply_steer, steer_req ) )
@@ -305,14 +308,13 @@ class CarController():
         self.resume_cnt += 1
       else:
         self.resume_cnt = 0
-    
-    if CS.out.cruiseState.modeSel == 3:
-      if CS.out.brakePressed and CS.VSetDis > 30:
+    elif CS.out.cruiseState.modeSel == 3:
+      if CS.out.brakeLights and CS.VSetDis > 30:
         self.res_cnt = 0
-        self.res_delay = 50
-      elif not CS.out.brakePressed and self.res_delay:
+        self.res_delay = 100
+      elif self.res_delay:
         self.res_delay -= 1
-      elif not CS.out.brakePressed and not self.res_delay and self.res_cnt < 6 and CS.out.cruiseState.available and CS.VSetDis:
+      elif not self.res_delay and self.res_cnt < 6 and CS.VSetDis > 30 and CS.out.vEgo > 30 * CV.KPH_TO_MS :
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
         self.res_cnt += 1
       else:
