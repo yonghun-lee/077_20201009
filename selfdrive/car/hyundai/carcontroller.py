@@ -78,7 +78,7 @@ class CarController():
     self.st_time = 1
     self.steerMax = SteerLimitParams.STEER_MAX
 
-    self.res_cnt = 3
+    self.res_cnt = 7
     self.res_delay = 0
 
   def process_hud_alert(self, enabled, CC ):
@@ -314,11 +314,11 @@ class CarController():
         self.res_delay = 100
       elif self.res_delay:
         self.res_delay -= 1
-      elif not self.res_delay and self.res_cnt < 3 and CS.VSetDis > 30 and CS.out.vEgo > 30 * CV.KPH_TO_MS :
+      elif not self.res_delay and self.res_cnt < 6 and CS.VSetDis > 30 and CS.out.vEgo > 30 * CV.KPH_TO_MS :
         can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
         self.res_cnt += 1
       else:
-        self.res_cnt = 3
+        self.res_cnt = 7
         self.res_delay = 0
 
     # 20 Hz LFA MFA message
