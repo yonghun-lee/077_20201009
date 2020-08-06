@@ -311,7 +311,7 @@ class CarController():
     elif CS.out.cruiseState.modeSel == 3:
       if CS.out.brakeLights and CS.VSetDis > 30:
         self.res_cnt = 0
-        self.res_delay = 100
+        self.res_delay = 50
       elif self.res_delay:
         self.res_delay -= 1
       elif not self.res_delay and self.res_cnt < 6 and CS.VSetDis > 30 and CS.out.vEgo > 30 * CV.KPH_TO_MS :
