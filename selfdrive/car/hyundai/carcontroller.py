@@ -308,7 +308,8 @@ class CarController():
         self.resume_cnt += 1
       else:
         self.resume_cnt = 0
-    elif CS.out.cruiseState.modeSel == 3:
+    
+    if CS.out.cruiseState.modeSel == 3:
       if CS.out.brakeLights and CS.VSetDis > 30:
         self.res_cnt = 0
         self.res_delay = 50
