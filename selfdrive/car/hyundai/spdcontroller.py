@@ -104,6 +104,7 @@ class SpdController():
         self.btn_type = Buttons.NONE
         self.active_time = 0
 
+        self.params = Params()
         self.param_OpkrAccelProfile = int(self.params.get('OpkrAccelProfile')) 
 
 
