@@ -251,7 +251,7 @@ class CarController():
     str_log2 = '프레임율={:03.0f}  STMAX={:03.0f}'.format( self.timer1.sampleTime(), self.steerMax )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
 
-    run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None and (CS.out.cruiseState.modeSel == 1 or CS.out.cruiseState.modeSel == 2)
+    run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None and (CS.out.cruiseState.modeSel == 1 or CS.out.cruiseState.modeSel == 2 or CS.out.cruiseState.modeSel == 3)
     if not run_speed_ctrl:
       if CS.out.cruiseState.modeSel == 0:
         self.steer_mode = "오파모드"
