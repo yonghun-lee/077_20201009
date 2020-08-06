@@ -298,8 +298,6 @@ class CarController():
         if self.resume_cnt > 5:
           self.last_resume_frame = frame
           self.resume_cnt = 0
-      elif CS.out.vEgo < 1 and CS.VSetDis < 50 and self.param_OpkrAccelProfile == 3:
-        can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
     # reset lead distnce after the car starts moving
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
