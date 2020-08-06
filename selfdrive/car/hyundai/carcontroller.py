@@ -305,6 +305,8 @@ class CarController():
       is_sc_run = self.SC.update( CS, sm, self )
       if is_sc_run:
         can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
+        if CS.out.vEgo < 1 and CS.VSetDis < 50 and self.param_OpkrAccelProfile == 3:
+          can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.RES_ACCEL, CS.VSetDis))
         self.resume_cnt += 1
       else:
         self.resume_cnt = 0
