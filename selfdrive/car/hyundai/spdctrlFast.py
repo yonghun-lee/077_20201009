@@ -67,9 +67,9 @@ class SpdctrlFast(SpdController):
                     if lead_set_speed < 40:
                         lead_set_speed = 40
                 else:
-                    self.seq_step_debug = ""
+                    self.seq_step_debug = "가속(+5)"
                     #lead_set_speed = int(CS.VSetDis)
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 10, 5)                    
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 5)                    
                     
             elif lead_objspd < -30 or (dRel < 60 and CS.clu_Vanz > 60 and lead_objspd < -5):            
                 self.seq_step_debug = "감속(-4)"
@@ -103,33 +103,33 @@ class SpdctrlFast(SpdController):
             if dRel >= 150: # 감지범위 밖에 멀리 떨어져 있으면
                 if CS.clu_Vanz >= 60: 
                    self.seq_step_debug = "가속(+3)"
-                   lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 3)
+                   lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 3)
                 else:
                    self.seq_step_debug = "가속(+2)"
-                   lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 2)
+                   lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 5)
             elif lead_objspd < self.cv_Dist:
                 self.seq_step_debug = "속도유지"
                 lead_set_speed = int(CS.VSetDis)
             elif lead_objspd < 5:
                 self.seq_step_debug = "가속(+3)"
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 3)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 50, 5)
             elif lead_objspd < 10:
-                self.seq_step_debug = "가속(+5)"
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, 5)
+                self.seq_step_debug = "가속(길게)"
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 150, 1)
             elif lead_objspd < 20:
                 if CS.clu_Vanz >= 60: 
                     self.seq_step_debug = "가속(+6)"
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 6)
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 6)
                 else:
-                    self.seq_step_debug = "가속(+7)"
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 7)
+                    self.seq_step_debug = "가속(길게)"
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, 1)
             else:
                 if CS.clu_Vanz >= 70: 
                     self.seq_step_debug = "가속(+7)"
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 7)
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 50, 7)
                 else:
-                    self.seq_step_debug = "가속(+8)"
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 8)
+                    self.seq_step_debug = "가속(길게)"
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, 1)
 
             if dRel > (CS.clu_Vanz + lead_objspd) * self.cv_Raio :   # 선행차 속도를 감안한(가감속) "내차 주행 속도" 수치의 비율(cv_Raio) 보다 선행차가 멀리 있다면 가속할 수 있도록 최대 설정 속도로 설정
                 self.seq_step_debug = "최대가속"

@@ -230,7 +230,7 @@ class SpdController():
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
               if self.param_OpkrAccelProfile == 3:
-                time = 50
+                time = int(set_time)
               else:
                 time = 100
         else:
