@@ -14,6 +14,7 @@ from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams
 from common.numpy_fast import clip, interp
+from common.params import Params
 
 from selfdrive.config import RADAR_TO_CAMERA
 
@@ -21,6 +22,8 @@ from selfdrive.config import RADAR_TO_CAMERA
 import common.log as trace1
 import common.CTime1000 as tm
 import common.MoveAvg as moveavg1
+
+
 
 
 
@@ -100,6 +103,9 @@ class SpdController():
         self.sc_clu_speed = 0
         self.btn_type = Buttons.NONE
         self.active_time = 0
+
+        self.params = Params()
+        self.param_OpkrAccelProfile = int(self.params.get('OpkrAccelProfile')) 
 
 
     def reset(self):
@@ -223,7 +229,10 @@ class SpdController():
         
         if add_val > 0:  # 증가
             if delta_speed > safety_dis:
-              time = 100
+              if self.param_OpkrAccelProfile == 3:
+                time = 50
+              else:
+                time = 100
         else:
             if delta_speed < -safety_dis:
               time = 100
