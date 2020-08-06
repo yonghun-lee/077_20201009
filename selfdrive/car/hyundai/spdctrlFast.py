@@ -62,7 +62,7 @@ class SpdctrlFast(SpdController):
             if lead_objspd >= 0:    # 속도 유지 시점 결정.
                 if CS.VSetDis > (CS.clu_Vanz + 20):
                     self.seq_step_debug = "속도유지"
-                    lead_wait_cmd = 10
+                    lead_wait_cmd = 15
                     lead_set_speed = CS.VSetDis# - 1  # CS.clu_Vanz + 5
                     if lead_set_speed < 40:
                         lead_set_speed = 40
@@ -73,7 +73,7 @@ class SpdctrlFast(SpdController):
                     
             elif lead_objspd < -30 or (dRel < 60 and CS.clu_Vanz > 60 and lead_objspd < -5):            
                 self.seq_step_debug = "감속(-4)"
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 10, -4)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -4)
             elif lead_objspd < -20 or (dRel < 80 and CS.clu_Vanz > 80 and lead_objspd < -5):            
                 self.seq_step_debug = "감속(-3)"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 15, -3)
@@ -132,9 +132,9 @@ class SpdctrlFast(SpdController):
                     lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 20, 9)
 
             if dRel > (CS.clu_Vanz + lead_objspd) * self.cv_Raio :   # 선행차 속도를 감안한(가감속) "내차 주행 속도" 수치의 비율(cv_Raio) 보다 선행차가 멀리 있다면 가속할 수 있도록 최대 설정 속도로 설정
-                self.seq_step_debug = "가속(+20)"
+                self.seq_step_debug = "가속(+30)"
                 #lead_set_speed = self.cruise_set_speed_kph
-                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 20)
+                lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 15, 30)
 
         return lead_wait_cmd, lead_set_speed
 
