@@ -32,11 +32,11 @@ class CarState(CarStateBase):
     self.main_on = False
     self.acc_active = False
     
+    self.cruiseState_modeSel = 0
+
     self.driverAcc_time = 0
     self.kyd = kyd_conf()
     self.steer_Angle_Correction = float(self.kyd.conf['steerAngleCorrection'])
-    self.cruiseState_modeSel = int(self.kyd.conf['cruiseStatemodeSelInit'])
-
 
     # BSM
     self.leftBlindspot_time = 0
