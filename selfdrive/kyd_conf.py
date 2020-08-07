@@ -90,11 +90,9 @@ class kyd_conf():
         self.config.update({"deadzone":"0.0"})
         self.element_updated = True
 	
-      if "sR_boost" not in self.config:
-        self.config.update({"sR_boost":"0"})
-        self.config.update({"sR_BP0":"0"})
-        self.config.update({"sR_BP1":"0"})
-        self.config.update({"sR_time":"0.1"})
+      if "sR_Boost" not in self.config:
+        self.config.update({"sR_Boost":[0.0, 0.0]})
+        self.config.update({"sR_BP":[0.0, 0.0]})
         self.element_updated = True
         
       if "outerLoopGain" not in self.config:
@@ -116,11 +114,14 @@ class kyd_conf():
         self.config.update({"steerDeltaDown":"7"})
         self.element_updated = True
 
-      if "stMax_boost" not in self.config:
-        self.config.update({"stMax_boost":"0"})
-        self.config.update({"st_BP0":"0"})
-        self.config.update({"st_BP1":"0"})
-        self.config.update({"st_time":"0.5"})
+      if "cvBPV" not in self.config:
+        self.config.update({"cvBPV":[50,255]})
+        self.config.update({"cvSteerMaxV1":[300,230]})
+        self.config.update({"cvSteerMaxV2":[409,255]})
+        self.config.update({"cvSteerDeltaUpV1":[3,3]})
+        self.config.update({"cvSteerDeltaUpV2":[4,3]})
+        self.config.update({"cvSteerDeltaDnV1":[6,4]})
+        self.config.update({"cvSteerDeltaDnV2":[8,4]})
         self.element_updated = True
 
       if "SteerActuatorDelay" not in self.config:
@@ -144,10 +145,8 @@ class kyd_conf():
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \
-                     "sR_boost":"0", "sR_BP0":"0", "sR_BP1":"0", "sR_time":"0.1", \
-                     "stMax_boost":"0", "st_BP0":"0", "st_BP1":"0", "st_time":"0.5"}
-
-
+                     "sR_Boost":[0.0, 0.0], "sR_BP":[0.0, 0.0], \
+                     "cvBPV":[50,255], "cvSteerMaxV1":[300,230], "cvSteerMaxV2":[409,255], "cvSteerDeltaUpV1":[3,3], "cvSteerDeltaUpV2":[4,3], "cvSteerDeltaDnV1":[6,4], "cvSteerDeltaDnV2":[8,4]}
       self.write_config(self.config)
     return self.config
 

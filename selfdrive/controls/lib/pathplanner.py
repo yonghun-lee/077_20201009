@@ -61,10 +61,6 @@ class PathPlanner():
     self.setup_mpc()
     self.solution_invalid_cnt = 0
 
-    self.mpc_frame = 0
-    self.sR_delay_counter = 0
-    self.steerRatio_new = 0.0
-    self.sR_time = 1
 
     self.params = Params()
     kyd = kyd_conf(CP)
@@ -79,10 +75,9 @@ class PathPlanner():
       self.steer_rate_cost = float(kyd.conf['steerRateCost'])
 
     
-    self.sR = [float(kyd.conf['steerRatio']), (float(kyd.conf['steerRatio']) + float(kyd.conf['sR_boost']))]
-    self.sRBP = [float(kyd.conf['sR_BP0']), float(kyd.conf['sR_BP1'])]
+    self.sR = [0., 0.]
+    self.sRBP = [0., 0.]
 
-    self.steerRateCost_prev = self.steer_rate_cost
 
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
@@ -132,42 +127,15 @@ class PathPlanner():
     curvature_factor = VM.curvature_factor(v_ego)
 
     if not self.param_OpkrEnableLearner:
-      #copied from kegman's code
-      # Get steerRatio and steerRateCost from kyd.json every x seconds
-      self.mpc_frame += 1
-      if self.mpc_frame % 500 == 0:
-        # live tuning through /data/openpilot/tune_pid.py overrides interface.py settings
-        kyd = kyd_conf()
-        if kyd.conf['EnableLiveTune'] == "1":
-          self.steer_rate_cost = float(kyd.conf['steerRateCost'])
-          if self.steer_rate_cost != self.steerRateCost_prev:
-            self.setup_mpc()
-            self.steerRateCost_prev = self.steer_rate_cost
-            
-          self.sR = [float(kyd.conf['steerRatio']), (float(kyd.conf['steerRatio']) + float(kyd.conf['sR_boost']))]
-          self.sRBP = [float(kyd.conf['sR_BP0']), float(kyd.conf['sR_BP1'])]
-          self.sR_time = int(float(kyd.conf['sR_time']) * 100)
-           
-        self.mpc_frame = 0
-      
-      if v_ego > 30 * CV.KPH_TO_MS:  #속도 30k/m이상에서 sR부스터 활성화
-        # boost steerRatio by boost amount if desired curvature is high
-        self.steerRatio_new = interp(abs(angle_steers), self.sRBP, self.sR) #조향각(angle_steers)에 의한 steerRatio변화
-        
-        self.sR_delay_counter += 1
-        if self.sR_delay_counter % self.sR_time != 0:
-          if self.steerRatio_new > self.steerRatio:
-            self.steerRatio = self.steerRatio_new
-        else:
-          self.steerRatio = self.steerRatio_new
-          self.sR_delay_counter = 0
-      else:
-        self.steerRatio = self.sR[0]
-      
-      #print("steerRatio =", self.steerRatio)
+      kyd = kyd_conf()
+      self.steer_rate_cost = float(kyd.conf['steerRateCost'])
+      self.sRBP = kyd.conf['sR_BP']
+      self.sRBoost = kyd.conf['sR_Boost']
+      boost_rate = interp(abs(angle_steers), self.sRBP, self.sRBoost)
+      self.steerRatio_new = self.steerRatio + boost_rate
+      self.steerRatio = self.steerRatio_new
 
     self.LP.parse_model(sm['model'])
-
 
     # Lane change logic
     one_blinker = sm['carState'].leftBlinker != sm['carState'].rightBlinker
@@ -276,7 +244,7 @@ class PathPlanner():
     mpc_nans = any(math.isnan(x) for x in self.mpc_solution[0].delta)
     t = sec_since_boot()
     if mpc_nans:
-      self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steerRateCost)
+      self.libmpc.init(MPC_COST_LAT.PATH, MPC_COST_LAT.LANE, MPC_COST_LAT.HEADING, self.steer_rate_cost)
       if self.param_OpkrEnableLearner:
         self.cur_state[0].delta = math.radians(angle_steers - angle_offset) / VM.sR
       else:
@@ -310,6 +278,8 @@ class PathPlanner():
     plan_send.pathPlan.desire = desire
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
+
+    plan_send.pathPlan.steerRatio = float(self.steerRatio)
 
     pm.send('pathPlan', plan_send)
 

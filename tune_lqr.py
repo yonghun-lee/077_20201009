@@ -48,8 +48,7 @@ kyd.conf['EnableLiveTune'] = "1"
 #param = ["cameraOffset", "outerLG", "innerLG", "timeConst", "actEffect", "steerRatio", "sR_boost", "sR_BP0", \
 #           "sR_BP1", "sR_time", "steerRateCost"]
 
-param = ["cameraOffset", "scale", "ki", "dc_gain", "steerRatio", "sR_boost", "sR_BP0", \
-           "sR_BP1", "sR_time", "steerRateCost"]
+param = ["cameraOffset", "scale", "ki", "dc_gain"]
 
 #param = ["Kp", "Ki", "Kf", "steerRatio", "sR_boost", "sR_BP0", \
 #         "sR_BP1", "sR_time", "steerRateCost", "deadzone", "slowOnCurves", \
@@ -168,24 +167,6 @@ while True:
 
   if float(kyd.conf['EnableLiveTune']) != 1 and float(kyd.conf['EnableLiveTune']) != 0:
     kyd.conf['EnableLiveTune'] = "1"
-
-  if float(kyd.conf['steerRatio']) < 1 and float(kyd.conf['steerRatio']) != -1:
-    kyd.conf['steerRatio'] = "1"
-    
-  if float(kyd.conf['steerRateCost']) < 0.01 and float(kyd.conf['steerRateCost']) != -1:
-    kyd.conf['steerRateCost'] = "0.01"
-    
-  if float(kyd.conf['sR_boost']) < 0:
-    kyd.conf['sR_boost'] = "0"
-    
-  if float(kyd.conf['sR_BP0']) < 0:
-    kyd.conf['sR_BP0'] = "0"
-    
-  if float(kyd.conf['sR_BP1']) < 0:
-    kyd.conf['sR_BP1'] = "0"
-    
-  if float(kyd.conf['sR_time']) < 0.1:
-    kyd.conf['sR_time'] = "0.1"
 
   if write_json:
     kyd.write_config(kyd.conf)
