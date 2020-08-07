@@ -222,8 +222,8 @@ class Controls:
       self.events.add(EventName.radarCommIssue)
     elif not self.timer_start and not self.sm.all_alive_and_valid():
       self.events.add(EventName.commIssue)
-    if not self.sm['pathPlan'].mpcSolutionValid:
-      self.events.add(EventName.plannerError)
+    #if not self.sm['pathPlan'].mpcSolutionValid:
+      #self.events.add(EventName.plannerError)
     if not self.sm['liveLocationKalman'].sensorsOK and os.getenv("NOSENSOR") is None:
       if self.sm.frame > 5 / DT_CTRL:  # Give locationd some time to receive all the inputs
         self.events.add(EventName.sensorDataInvalid)
