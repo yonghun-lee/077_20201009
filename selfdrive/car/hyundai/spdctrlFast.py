@@ -10,7 +10,7 @@ import common.log as trace1
 class SpdctrlFast(SpdController):
     def __init__(self, CP=None):
         super().__init__( CP )
-        self.cv_Raio = 0.5
+        self.cv_Raio = 0.6
         self.cv_Dist = -5
         self.steer_mode = ""
 
