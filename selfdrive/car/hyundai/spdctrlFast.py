@@ -10,7 +10,7 @@ import common.log as trace1
 class SpdctrlFast(SpdController):
     def __init__(self, CP=None):
         super().__init__( CP )
-        self.cv_Raio = 0.6
+        self.cv_Raio = 0.5
         self.cv_Dist = -5
         self.steer_mode = ""
 
@@ -134,10 +134,10 @@ class SpdctrlFast(SpdController):
             if dRel > (CS.clu_Vanz + lead_objspd) * self.cv_Raio :   # 선행차 속도를 감안한(가감속) "내차 주행 속도" 수치의 비율(cv_Raio) 보다 선행차가 멀리 있다면 가속할 수 있도록 최대 설정 속도로 설정
                 self.seq_step_debug = "최대가속"
                 #lead_set_speed = self.cruise_set_speed_kph
-                if lead_set_speed <= 45:
+                if lead_set_speed <= 50:
                     lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 2, 10)
                 else:
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 5)
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 75, 10)
 
         return lead_wait_cmd, lead_set_speed
 
