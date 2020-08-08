@@ -136,18 +136,6 @@ class CarController():
     self.steerDNV = [ float(self.steerDN1), float(self.steerDN2) ]
     self.DN = interp( v_ego, self.sRKPHV, self.steerDNV )
 
-
-  def steerParams_torque(self, CS):
-    param = SteerLimitParams()
-    if not self.param_OpkrEnableLearner:
-      self.cV_tune( CS.out.vEgo, self.model_speed )
-      param.STEER_MAX = min( param.STEER_MAX, self.MAX)
-      param.STEER_DELTA_UP = min( param.STEER_DELTA_UP, self.UP)
-      param.STEER_DELTA_DOWN = min( param.STEER_DELTA_DOWN, self.DN )
-
-    return param
-
-
   def param_load(self ):
     self.command_cnt += 1
     if self.command_cnt > 100:
@@ -176,7 +164,6 @@ class CarController():
       else:
         self.SC = SpdctrlFast()
 
-
   def update(self, CC, CS, frame, sm, CP ):
 
     if self.CP != CP:
@@ -202,7 +189,11 @@ class CarController():
       new_steer = actuators.steer * SteerLimitParams.STEER_MAX
       apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
     else:
-      param = self.steerParams_torque( CS )
+      param = SteerLimitParams()
+      self.cV_tune( CS.out.vEgo, self.model_speed )
+      param.STEER_MAX = min( param.STEER_MAX, self.MAX )
+      param.STEER_DELTA_UP = min( param.STEER_DELTA_UP, self.UP )
+      param.STEER_DELTA_DOWN = min( param.STEER_DELTA_DOWN, self.DN )
       new_steer = actuators.steer * param.STEER_MAX
       apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)    
     self.steer_rate_limited = new_steer != apply_steer
