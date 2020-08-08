@@ -134,7 +134,7 @@ class CarController():
         self.SC = SpdctrlFast()
 
 
--  #아톰님 보간함수 참조
+  #아톰님 보간함수 참조
   def cV_tune( self, v_ego, cv_value ):  # cV(곡률에 의한 변화)
     kyd = kyd_conf()
     self.sRKPHV = [9., 22.]
