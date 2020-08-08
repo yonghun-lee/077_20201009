@@ -108,7 +108,7 @@ class CarController():
   #아톰님 보간함수 참조
   def cV_tune( self, v_ego, cv_value ):  # cV(곡률에 의한 변화)
     kyd = kyd_conf()
-    self.sRKPHV = [9., 17.]
+    self.sRKPHV = [9., 22.]
     self.cVBPV = kyd.conf['cvBPV']   # 곡률
     self.cvSteerMaxV1  = kyd.conf['cvSteerMaxV1']
     self.cvSteerDeltaUpV1 = kyd.conf['cvSteerDeltaUpV1']
