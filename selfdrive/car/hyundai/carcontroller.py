@@ -133,6 +133,39 @@ class CarController():
       else:
         self.SC = SpdctrlFast()
 
+
+-  #아톰님 보간함수 참조
+  def cV_tune( self, v_ego, cv_value ):  # cV(곡률에 의한 변화)
+    kyd = kyd_conf()
+    self.sRKPHV = [9., 22.]
+    self.cVBPV = kyd.conf['cvBPV']   # 곡률
+    self.cvSteerMaxV1  = kyd.conf['cvSteerMaxV1']
+    self.cvSteerDeltaUpV1 = kyd.conf['cvSteerDeltaUpV1']
+    self.cvSteerDeltaDnV1 = kyd.conf['cvSteerDeltaDnV1']
+    self.cvSteerMaxV2 = kyd.conf['cvSteerMaxV2']
+    self.cvSteerDeltaUpV2 = kyd.conf['cvSteerDeltaUpV2']
+    self.cvSteerDeltaDnV2 = kyd.conf['cvSteerDeltaDnV2']
+
+    cv_BPV = self.cVBPV   # 곡률
+    # Max
+    self.steerMax1 = interp( cv_value, cv_BPV, self.cvSteerMaxV1 )
+    self.steerMax2 = interp( cv_value, cv_BPV, self.cvSteerMaxV2 )
+    self.steerMaxV = [ float(self.steerMax1), float(self.steerMax2) ]
+    self.MAX = interp( v_ego, self.sRKPHV, self.steerMaxV )  
+
+    # Up
+    self.steerUP1 = interp( cv_value, cv_BPV, self.cvSteerDeltaUpV1 )
+    self.steerUP2 = interp( cv_value, cv_BPV, self.cvSteerDeltaUpV2 )
+    self.steerUPV = [ float(self.steerUP1), float(self.steerUP2) ]
+    self.UP = interp( v_ego, self.sRKPHV, self.steerUPV )
+
+    # Dn
+    self.steerDN1 = interp( cv_value, cv_BPV, self.cvSteerDeltaDnV1 )
+    self.steerDN2 = interp( cv_value, cv_BPV, self.cvSteerDeltaDnV2 )    
+    self.steerDNV = [ float(self.steerDN1), float(self.steerDN2) ]
+    self.DN = interp( v_ego, self.sRKPHV, self.steerDNV )
+
+
   def update(self, CC, CS, frame, sm, CP ):
 
     if self.CP != CP:
@@ -158,39 +191,13 @@ class CarController():
       self.steer_rate_limited = new_steer != apply_steer
     else:
       path_plan = sm['pathPlan']
-      kyd = kyd_conf()
-      self.sRKPHV = [9., 22.]
-      self.cVBPV = kyd.conf['cvBPV']   # 곡률
-      self.cvSteerMaxV1  = kyd.conf['cvSteerMaxV1']
-      self.cvSteerDeltaUpV1 = kyd.conf['cvSteerDeltaUpV1']
-      self.cvSteerDeltaDnV1 = kyd.conf['cvSteerDeltaDnV1']
-      self.cvSteerMaxV2 = kyd.conf['cvSteerMaxV2']
-      self.cvSteerDeltaUpV2 = kyd.conf['cvSteerDeltaUpV2']
-      self.cvSteerDeltaDnV2 = kyd.conf['cvSteerDeltaDnV2']
-
-      # Max
-      self.steerMax1 = interp( self.model_speed, self.cVBPV, self.cvSteerMaxV1 )
-      self.steerMax2 = interp( self.model_speed, self.cVBPV, self.cvSteerMaxV2 )
-      self.steerMaxV = [ float(self.steerMax1), float(self.steerMax2) ]
-      self.MAX = interp( CS.out.vEgo, self.sRKPHV, self.steerMaxV )  
-
-      # Up
-      self.steerUP1 = interp( self.model_speed, self.cVBPV, self.cvSteerDeltaUpV1 )
-      self.steerUP2 = interp( self.model_speed, self.cVBPV, self.cvSteerDeltaUpV2 )
-      self.steerUPV = [ float(self.steerUP1), float(self.steerUP2) ]
-      self.UP = interp( CS.out.vEgo, self.sRKPHV, self.steerUPV )
-
-      # Dn
-      self.steerDN1 = interp( self.model_speed, self.cVBPV, self.cvSteerDeltaDnV1 )
-      self.steerDN2 = interp( self.model_speed, self.cVBPV, self.cvSteerDeltaDnV2 )    
-      self.steerDNV = [ float(self.steerDN1), float(self.steerDN2) ]
-      self.DN = interp( CS.out.vEgo, self.sRKPHV, self.steerDNV )
-
-      SteerLimitParams.STEER_MAX = min( SteerLimitParams.STEER_MAX, self.MAX )
-      SteerLimitParams.STEER_DELTA_UP = min( SteerLimitParams.STEER_DELTA_UP, self.UP )
-      SteerLimitParams.STEER_DELTA_DOWN = min( SteerLimitParams.STEER_DELTA_DOWN, self.DN )
-      new_steer = actuators.steer * SteerLimitParams.STEER_MAX
-      apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)    
+      self.cV_tune( CS.out.vEgo, self.model_speed )
+      param = SteerLimitParams()
+      param.STEER_MAX = min( param.STEER_MAX, self.MAX )
+      param.STEER_DELTA_UP = min( param.STEER_DELTA_UP, self.UP )
+      param.STEER_DELTA_DOWN = min( param.STEER_DELTA_DOWN, self.DN )
+      new_steer = actuators.steer * param.STEER_MAX
+      apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)    
       self.steer_rate_limited = new_steer != apply_steer
 
 
