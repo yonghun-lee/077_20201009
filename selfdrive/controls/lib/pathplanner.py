@@ -281,7 +281,8 @@ class PathPlanner():
     plan_send.pathPlan.laneChangeState = self.lane_change_state
     plan_send.pathPlan.laneChangeDirection = self.lane_change_direction
 
-    plan_send.pathPlan.steerRatio = float(self.kyd_steerRatio)
+    if not self.param_OpkrEnableLearner:
+      plan_send.pathPlan.steerRatio = float(self.kyd_steerRatio)
 
     pm.send('pathPlan', plan_send)
 
