@@ -82,7 +82,6 @@ class PathPlanner():
     self.model_speed = 0
     self.model_sum = 0
 
-
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
     self.lane_change_auto_delay = self.params.get_OpkrAutoLanechangedelay()  #int( self.params.get('OpkrAutoLanechangedelay') )
@@ -121,7 +120,7 @@ class PathPlanner():
     angle_offset = sm['liveParameters'].angleOffset
 
     if not self.param_OpkrEnableLearner:
-      self.model_speed, self.model_sum = self.SC.calc_va( sm, v_ego  )
+      self.model_speed, self.model_sum = SpdController.calc_va( sm, v_ego  )
       kyd = kyd_conf()
       self.steer_rate_cost = float(kyd.conf['steerRateCost'])
       self.sRBP = kyd.conf['sR_BP']
