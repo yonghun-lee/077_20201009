@@ -197,11 +197,14 @@ class CarController():
     else:
       self.model_speed = self.model_sum = 0
 
-
     # Steering Torque
-    param = self.steerParams_torque( CS )
-    new_steer = actuators.steer * param.STEER_MAX
-    apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)
+    if self.param_OpkrEnableLearner:
+      new_steer = actuators.steer * SteerLimitParams.STEER_MAX
+      apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, SteerLimitParams)
+    else:
+      param = self.steerParams_torque( CS )
+      new_steer = actuators.steer * param.STEER_MAX
+      apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, param)    
     self.steer_rate_limited = new_steer != apply_steer
 
 
