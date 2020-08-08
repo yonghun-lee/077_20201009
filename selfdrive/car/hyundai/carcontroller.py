@@ -244,7 +244,7 @@ class CarController():
     if self.param_OpkrEnableLearner:
       str_log2 = '프레임율={:03.0f}  STMAX={:03.0f}'.format( self.timer1.sampleTime(), SteerLimitParams.STEER_MAX, )
     else:
-      str_log2 = '프레임율={:03.0f}  STMAX={:03.0f}  SR={:05.2f}'.format( self.timer1.sampleTime(), SteerLimitParams.STEER_MAX, path_plan.steerRatio )
+      str_log2 = '프레임율={:03.0f}  ST={:03.0f}/{:01.0f}/{:01.0f}  SR={:05.2f}'.format( self.timer1.sampleTime(), self.MAX, self.UP, self.DN, path_plan.steerRatio )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
 
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None and (CS.out.cruiseState.modeSel == 1 or CS.out.cruiseState.modeSel == 2 or CS.out.cruiseState.modeSel == 3)
