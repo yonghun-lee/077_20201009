@@ -436,8 +436,7 @@ def manager_thread():
 
   params = Params()
 
-  EnableLogger = int(params.get('OpkrEnableLogger'))
-  EnableDriverMonitoring = int(params.get('OpkrEnableDriverMonitoring'))
+  EnableLogger = int(params.get('OpkrEnableLogger'))     
 
   #EnableLogger = (params.get("RecordFront") != b"0")
 
@@ -450,11 +449,7 @@ def manager_thread():
     persistent_processes.remove( 'deleter' )
   else:
     # save boot log
-    subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
-
-  if not EnableLogger:
-    car_started_processes.remove( 'dmonitoringd' )
-    car_started_processes.remove( 'dmonitoringmodeld' )
+    subprocess.call(["./loggerd", "--bootlog"], cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))  
 
 
   # start daemon processes
