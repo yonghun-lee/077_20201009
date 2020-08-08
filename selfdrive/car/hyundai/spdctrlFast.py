@@ -42,9 +42,9 @@ class SpdctrlFast(SpdController):
  
         # 가속을 위한 사용자 임의속도 설정 후의 상황
         if CS.driverAcc_time:
-          lead_set_speed = CS.clu_Vanz
-          self.seq_step_debug = "운전자가속"
-          lead_wait_cmd = 15
+            lead_set_speed = CS.clu_Vanz
+            self.seq_step_debug = "운전자가속"
+            lead_wait_cmd = 15
         elif (CS.VSetDis >= 70 and lead_objspd < -30) or (lead_objspd < -40):
             self.seq_step_debug = "감속(-10)"
             lead_wait_cmd, lead_set_speed = self.get_tm_speed(CS, 10, -10)  
@@ -123,7 +123,7 @@ class SpdctrlFast(SpdController):
                     lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 5, 10)
                 elif CS.clu_Vanz >= 45 and lead_set_speed <= 60: # 차량속도 45넘을 때 60까지 설정속도 빠르게 올린 후 대기
                     self.seq_step_debug = "종반가속"
-                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 5, 10))
+                    lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 5, 10)
             else:
                 if d_delta > 0: # 앞차가 기준거리(dst_lead_distance)보다 앞에 있을 때 일반 가속, 기준거리 안에 있을 때 가속하지 않음
                     self.seq_step_debug = "가속(+1)"
