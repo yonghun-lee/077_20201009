@@ -12,6 +12,7 @@ import cereal.messaging as messaging
 from cereal import log
 import common.log as trace1
 from selfdrive.kyd_conf import kyd_conf
+from selfdrive.car.hyundai.spdcontroller  import SpdController
 
 LaneChangeState = log.PathPlan.LaneChangeState
 LaneChangeDirection = log.PathPlan.LaneChangeDirection
@@ -78,6 +79,9 @@ class PathPlanner():
     self.sRBP = [0., 0.]
     self.sRBoost = [0., 0.]
 
+    self.model_speed = 0
+    self.model_sum = 0
+
 
     # Lane change 
     self.lane_change_enabled = self.params.get('LaneChangeEnabled') == b'1'
@@ -116,13 +120,13 @@ class PathPlanner():
 
     angle_offset = sm['liveParameters'].angleOffset
 
-
     if not self.param_OpkrEnableLearner:
+      self.model_speed, self.model_sum = self.SC.calc_va( sm, v_ego  )
       kyd = kyd_conf()
       self.steer_rate_cost = float(kyd.conf['steerRateCost'])
       self.sRBP = kyd.conf['sR_BP']
       self.sRBoost = kyd.conf['sR_Boost']
-      boost_rate = interp(abs(angle_steers), self.sRBP, self.sRBoost)
+      boost_rate = interp(self.model_speed, self.sRBP, self.sRBoost)
       self.kyd_steerRatio = self.steerRatio + boost_rate
 
 
