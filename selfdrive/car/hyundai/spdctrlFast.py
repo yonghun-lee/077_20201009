@@ -2,6 +2,7 @@
 
 import math
 import numpy as np
+from cereal import car, log
 from common.numpy_fast import clip, interp
 
 from selfdrive.car.hyundai.spdcontroller  import SpdController
@@ -140,29 +141,22 @@ class SpdctrlFast(SpdController):
 
         return lead_wait_cmd, lead_set_speed
 
-    def update_curv(self, CS, sm, model_speed):
+    def update_curv(self, CS, sm, pm, model_speed):
+        controls_state = pm['controlsState']
         wait_time_cmd = 0
         set_speed = self.cruise_set_speed_kph
 
         # 2. 커브 감속.
         #if self.cruise_set_speed_kph >= 100:
-        if CS.clu_Vanz >= 60 and CS.out.cruiseState.modeSel == 1:
-            if model_speed < 60:
-                set_speed = self.cruise_set_speed_kph - 20
-                self.seq_step_debug = "커브감속(-20)"
-                wait_time_cmd = 300
-            elif model_speed < 70:
-                set_speed = self.cruise_set_speed_kph - 15
-                self.seq_step_debug = "커브감속(-15)"
-                wait_time_cmd = 250
-            elif model_speed < 80:
-                set_speed = self.cruise_set_speed_kph - 10
-                self.seq_step_debug = "커브감속(-10)"
-                wait_time_cmd = 200
-            elif model_speed < 90:
-                set_speed = self.cruise_set_speed_kph - 5
-                self.seq_step_debug = "커브감속(-5)"
-                wait_time_cmd = 150
+        if CS.clu_Vanz >= 40 and model_speed < 100 and CS.out.cruiseState.modeSel == 1:
+            if controls_state.steerDeviation:
+                set_speed = self.cruise_set_speed_kph - 1
+                self.seq_step_debug = "커브감속중"
+                wait_time_cmd = 1
+            else:
+                set_speed = self.cruise_set_speed_kph
+                wait_time_cmd = 0
+
 
         return wait_time_cmd, set_speed
 

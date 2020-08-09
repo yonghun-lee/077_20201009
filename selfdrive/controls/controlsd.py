@@ -127,6 +127,8 @@ class Controls:
     self.events_prev = []
     self.current_alert_types = [ET.PERMANENT]
 
+    self.steer_deviation = False
+
     self.sm['liveCalibration'].calStatus = Calibration.INVALID
     self.sm['thermal'].freeSpace = 1.
     self.sm['dMonitoringState'].events = []
@@ -413,7 +415,11 @@ class Controls:
       right_deviation = actuators.steer < 0 and path_plan.dPoly[3] < -0.1
 
       if left_deviation or right_deviation:
+        self.steer_deviation = True
         self.events.add(EventName.steerSaturated)
+      else:
+        self.steer_deviation = False
+
 
     return actuators, v_acc_sol, a_acc_sol, lac_log
 
@@ -528,6 +534,8 @@ class Controls:
     controlsState.canErrorCounter = self.can_error_counter
     controlsState.alertTextMsg1 = str(log_alertTextMsg1)
     controlsState.alertTextMsg2 = str(log_alertTextMsg2)
+    controlsState.steerDeviation = self.steer_deviation
+
 
     if self.CP.lateralTuning.which() == 'pid':
       controlsState.lateralControlState.pidState = lac_log
