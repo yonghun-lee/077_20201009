@@ -100,7 +100,7 @@ class SpdctrlFast(SpdController):
 
         # 2. 커브 감속.
         #if self.cruise_set_speed_kph >= 100:
-        if CS.clu_Vanz >= 60 and CS.out.cruiseState.modeSel == 1
+        if CS.clu_Vanz >= 60 and CS.out.cruiseState.modeSel == 1:
             if model_speed < 60:
                 set_speed = self.cruise_set_speed_kph - (CS.clu_Vanz * 0.2)
                 self.seq_step_debug = "커브감속"
