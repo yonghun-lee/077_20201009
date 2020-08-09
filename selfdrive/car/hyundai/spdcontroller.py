@@ -255,7 +255,7 @@ class SpdController():
         str5 = str3 +  str4
         trace1.printf2( str5 )
 
-    def lead_control(self, CS, sm, pm, CC ):
+    def lead_control(self, CS, sm, CC ):
         dRel = CC.dRel
         yRel = CC.yRel
         vRel = CC.vRel
