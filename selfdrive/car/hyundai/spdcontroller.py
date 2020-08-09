@@ -245,7 +245,7 @@ class SpdController():
     def update_lead(self, c, can_strings):
         raise NotImplementedError
 
-    def update_curv(self, CS, sm, pm, model_speed):
+    def update_curv(self, CS, sm, model_speed):
         raise NotImplementedError
 
     def update_log(self, CS, set_speed, target_set_speed, long_wait_cmd ):
@@ -274,11 +274,11 @@ class SpdController():
 
         # 커브 감속.
         model_speed = CC.model_speed   #calc_va( CS.out.vEgo )
-        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, pm, model_speed)
+        curv_wait_cmd, curv_set_speed = self.update_curv(CS, sm, model_speed)
 
         if curv_wait_cmd != 0:
             if lead_set_speed > curv_set_speed:
-                set_speed -= 1
+                set_speed = curv_set_speed
                 long_wait_cmd = curv_wait_cmd
             else:
                 set_speed = lead_set_speed
