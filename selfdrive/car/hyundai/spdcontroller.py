@@ -327,7 +327,7 @@ class SpdController():
 
 
 
-    def update(self, CS, sm, CC ):
+    def update(self, CS, sm, pm, CC ):
         self.cruise_set_mode = CS.out.cruiseState.modeSel
         self.cruise_set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
         if CS.driverOverride == 2 or not CS.acc_active or CS.cruise_buttons == Buttons.RES_ACCEL or CS.cruise_buttons == Buttons.SET_DECEL:
