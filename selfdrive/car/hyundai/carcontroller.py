@@ -166,7 +166,7 @@ class CarController():
     self.DN = interp( v_ego, self.sRKPHV, self.steerDNV )
 
 
-  def update(self, CC, CS, frame, sm, CP ):
+  def update(self, CC, CS, frame, sm, pm, CP ):
 
     if self.CP != CP:
       self.CP = CP
@@ -305,7 +305,7 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
     elif run_speed_ctrl and self.SC != None:
-      is_sc_run = self.SC.update( CS, sm, self )
+      is_sc_run = self.SC.update( CS, sm, pm, self )
       if is_sc_run:
         can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.scc_bus, CS.clu11, self.SC.btn_type, self.SC.sc_clu_speed ))
         self.resume_cnt += 1
