@@ -319,7 +319,6 @@ class CarController():
     
     if CS.out.cruiseState.modeSel == 3:
       if CS.out.brakeLights and CS.VSetDis > 30:
-        can_sends.append(create_clu11(self.packer, frame, CS.scc_bus, CS.clu11, Buttons.CANCEL, clu11_speed))
         self.res_cnt = 0
         self.res_delay = 50
       elif self.res_delay:
