@@ -159,14 +159,19 @@ class CarState(CarStateBase):
     leftBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigLh'] != 0
     rightBlinker = cp.vl["CGW1"]['CF_Gway_TurnSigRh'] != 0
 
-    if leftBlinker:
+    if leftBlinker and not rightBlinker:
       self.left_blinker_flash = 200
-    elif  self.left_blinker_flash:
-      self.left_blinker_flash -= 1
-
-    if rightBlinker:
+      self.right_blinker_flash = 0
+    elif rightBlinker and not leftBlinker:
       self.right_blinker_flash = 200
-    elif  self.right_blinker_flash:
+      self.left_blinker_flash = 0
+    elif leftBlinker and rightBlinker:
+      self.left_blinker_flash = 200
+      self.right_blinker_flash = 200
+
+    if  self.left_blinker_flash:
+      self.left_blinker_flash -= 1
+    if  self.right_blinker_flash:
       self.right_blinker_flash -= 1
 
     leftBlinker = self.left_blinker_flash != 0

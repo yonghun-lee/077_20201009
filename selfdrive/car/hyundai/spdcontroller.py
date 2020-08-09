@@ -159,7 +159,7 @@ class SpdController():
         set_speed_kph = self.cruise_set_speed_kph
         delta_vsetdis = 0
         if CS.acc_active:
-            delta_vsetdis = abs(CS.VSetDis - self.prev_VSetDis)
+            delta_vsetdis = abs(int(CS.VSetDis) - self.prev_VSetDis)
             if self.prev_clu_CruiseSwState != CS.cruise_buttons:
                 if CS.cruise_buttons:
                     self.prev_VSetDis = int(CS.VSetDis)
@@ -170,13 +170,13 @@ class SpdController():
                         self.curise_set_first = 0
                         set_speed_kph =  int(CS.VSetDis)
                     elif delta_vsetdis > 5:
-                        set_speed_kph = CS.VSetDis
+                        set_speed_kph = int(CS.VSetDis)
                     elif not self.curise_sw_check:
                         set_speed_kph += 1
                 elif self.prev_clu_CruiseSwState == Buttons.SET_DECEL:  # dn
                     if self.curise_set_first:
                         self.curise_set_first = 0
-                        set_speed_kph = int(CS.clu_Vanz)
+                        set_speed_kph = int(CS.VSetDis)
                     elif delta_vsetdis > 5:
                         set_speed_kph = int(CS.VSetDis)
                     elif not self.curise_sw_check:
@@ -190,7 +190,7 @@ class SpdController():
             self.curise_sw_check = False
             self.curise_set_first = 1
             self.prev_VSetDis = int(CS.VSetDis)
-            set_speed_kph = CS.VSetDis
+            set_speed_kph = int(CS.VSetDis)
             if self.prev_clu_CruiseSwState != CS.cruise_buttons:  # MODE 전환.
                 if CS.cruise_buttons == Buttons.CANCEL: 
                     self.cruise_set_mode += 1
@@ -226,7 +226,7 @@ class SpdController():
     def get_tm_speed(self, CS, set_time, add_val, safety_dis=5):
         time = int(set_time)
 
-        delta_speed = CS.VSetDis - CS.clu_Vanz
+        delta_speed = int(CS.VSetDis) - CS.clu_Vanz
         set_speed = int(CS.VSetDis) + add_val
         
         if add_val > 0:  # 증가
@@ -270,7 +270,7 @@ class SpdController():
 
 
         # 선행 차량 거리유지
-        lead_wait_cmd, lead_set_speed = self.update_lead( CS,  dRel, yRel, vRel)  
+        lead_wait_cmd, lead_set_speed = self.update_lead( CS, dRel, yRel, vRel)
 
         # 커브 감속.
         model_speed = CC.model_speed   #calc_va( CS.out.vEgo )
@@ -301,17 +301,17 @@ class SpdController():
         if self.long_curv_timer < long_wait_cmd:
             pass
         elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
-            if self.cruise_set_speed_kph > CS.clu_Vanz:
+            if self.cruise_set_speed_kph > int(CS.clu_Vanz):
                 delta = int(CS.clu_Vanz) - int(CS.VSetDis)
                 if delta > 1:
                     set_speed = CS.clu_Vanz
                     btn_type = Buttons.SET_DECEL
         elif delta <= -1:
-            set_speed = CS.VSetDis - dec_step_cmd
+            set_speed = int(CS.VSetDis) - dec_step_cmd
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
         elif delta >= 1: # and (model_speed > 50 or CS.clu_Vanz < 70):
-            set_speed = CS.VSetDis + dec_step_cmd
+            set_speed = int(CS.VSetDis) + dec_step_cmd
             btn_type = Buttons.RES_ACCEL
             self.long_curv_timer = 0            
             if set_speed > self.cruise_set_speed_kph:
