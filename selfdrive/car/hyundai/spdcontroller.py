@@ -338,7 +338,7 @@ class SpdController():
         elif self.wait_timer2:
             self.wait_timer2 -= 1
         else:
-            btn_type, clu_speed, active_time = self.lead_control( CS, sm, CC )   # speed controller spdcontroller.py
+            btn_type, clu_speed, active_time = self.lead_control( CS, sm, pm, CC )   # speed controller spdcontroller.py
 
             if CS.clu_Vanz < 20:
                 self.btn_type = Buttons.NONE
