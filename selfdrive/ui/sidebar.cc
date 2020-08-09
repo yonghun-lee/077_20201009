@@ -167,7 +167,7 @@ static void ui_draw_sidebar_panda_metric(UIState *s) {
         snprintf(panda_message_str, sizeof(panda_message_str), "%s", "VEHICLE\nNO GPS");
       } else if (s->scene.satelliteCount >= 6) {
         panda_severity = 0;
-        snprintf(panda_message_str, sizeof(panda_message_str), "%s", "VEHICLE\nGOOD GPS");
+        snprintf(panda_message_str, sizeof(panda_message_str), "%s %d", "VEHICLE\nGPS:", s->scene.satelliteCount);
       }
     } else {
       panda_severity = 0;
