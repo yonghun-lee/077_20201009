@@ -844,7 +844,7 @@ int main(int argc, char* argv[]) {
       default: nParamRead = 0; break;
     }
     
-    nTime = scene.params.nOpkrAutoScreenOff
+    nTime = scene.params.nOpkrAutoScreenOff;
 
     // light sensor is only exposed on EONs
     if (scene.params.nOpkrUIBrightness == 0) {
