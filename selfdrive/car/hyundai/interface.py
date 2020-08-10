@@ -25,7 +25,12 @@ class CarInterface(CarInterfaceBase):
 
     ret.carName = "hyundai"
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
-    ret.radarOffCan = False   #False(선행차우선)  #True(차선우선)    #선행차량 인식 마크 유무.
+
+    params = Params()
+    if int(params.get('LateralControlPriority')) == 0:
+      ret.radarOffCan = False   #False(선행차우선)  #True(차선우선)    #선행차량 인식 마크 유무.
+    else:
+      ret.radarOffCan = True
 
     # Most Hyundai car ports are community features for now
     ret.communityFeature = False
@@ -36,7 +41,6 @@ class CarInterface(CarInterfaceBase):
     ret.steerRateCost = 0.5
     ret.steerLimitTimer = float(kyd.conf['SteerLimitTimer'])  # 0.4
 
-    params = Params()
     if int(params.get('LateralControlMethod')) == 0:
       if candidate == CAR.SANTAFE:
         ret.lateralTuning.pid.kf = 0.00005

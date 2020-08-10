@@ -585,6 +585,8 @@ def main():
     ("FingerprintIssuedFix", "0"),
     ("LdwsCarFix", "0"),
     ("LateralControlMethod", "0"),
+    ("CruiseStatemodeSelInit", "0"),
+    ("LateralControlPriority", "0"),
   ]
 
   # set unset params

@@ -15,7 +15,6 @@ from selfdrive.controls.lib.long_mpc import LongitudinalMpc
 from selfdrive.car.hyundai.values import Buttons, SteerLimitParams
 from common.numpy_fast import clip, interp
 from common.params import Params
-from selfdrive.kyd_conf import kyd_conf
 
 from selfdrive.config import RADAR_TO_CAMERA
 
@@ -100,14 +99,13 @@ class SpdController():
 
         self.prev_VSetDis  = 0
         
-        self.kyd = kyd_conf()
-        self.cruise_set_mode = int(self.kyd.conf['cruiseStatemodeSelInit'])
         self.sc_clu_speed = 0
         self.btn_type = Buttons.NONE
         self.active_time = 0
 
         self.params = Params()
-        self.param_OpkrAccelProfile = int(self.params.get('OpkrAccelProfile')) 
+        self.param_OpkrAccelProfile = int(self.params.get('OpkrAccelProfile'))
+        self.cruise_set_mode = int(self.params.get('CruiseStatemodeSelInit'))
 
 
     def reset(self):

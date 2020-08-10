@@ -128,6 +128,8 @@ keys = {
   "FingerprintIssuedFix": [TxType.PERSISTENT],
   "LdwsCarFix": [TxType.PERSISTENT],
   "LateralControlMethod": [TxType.PERSISTENT],
+  "CruiseStatemodeSelInit": [TxType.PERSISTENT],
+  "LateralControlPriority": [TxType.PERSISTENT],
 }
 
 
