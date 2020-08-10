@@ -84,7 +84,7 @@ class SpdctrlFast(SpdController):
             elif lead_objspd > 2:
                 self.seq_step_debug = "일반가속"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 75, 1)
-            elif lead_objspd => 0 and (int(CS.clu_Vanz - CS.VSetDis) > -5):
+            elif lead_objspd >= 0 and (int(CS.clu_Vanz - CS.VSetDis) > -5):
                 self.seq_step_debug = "거리유지"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 150, 1)
             elif lead_objspd < -1 and int(CS.clu_Vanz * 0.4) > dRel:
