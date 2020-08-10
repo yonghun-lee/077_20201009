@@ -298,22 +298,21 @@ class SpdController():
 
         if self.long_curv_timer < long_wait_cmd:
             pass
-        elif CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
-            if self.cruise_set_speed_kph > int(CS.clu_Vanz):
-                delta = int(CS.clu_Vanz) - int(CS.VSetDis)
-                if delta > 1:
-                    set_speed = CS.clu_Vanz
-                    btn_type = Buttons.SET_DECEL
-        elif delta <= -1:
+        elif delta < 0:
             set_speed = int(CS.VSetDis) - dec_step_cmd
             btn_type = Buttons.SET_DECEL
             self.long_curv_timer = 0
-        elif delta >= 1: # and (model_speed > 50 or CS.clu_Vanz < 70):
-            set_speed = int(CS.VSetDis) + dec_step_cmd
-            btn_type = Buttons.RES_ACCEL
-            self.long_curv_timer = 0            
-            if set_speed > self.cruise_set_speed_kph:
-                set_speed = self.cruise_set_speed_kph
+        elif delta > 0:
+            if CS.driverOverride == 1:  # 가속패달에 의한 속도 설정.
+                if self.cruise_set_speed_kph > int(CS.clu_Vanz):
+                    delta = int(CS.clu_Vanz) - int(CS.VSetDis)
+                    if delta > 1:
+                        set_speed = int(CS.clu_Vanz)
+                        btn_type = Buttons.SET_DECEL
+            else:
+                set_speed = int(CS.VSetDis) + dec_step_cmd
+                btn_type = Buttons.RES_ACCEL
+                self.long_curv_timer = 0
         if self.cruise_set_mode == 0:
             btn_type = Buttons.NONE
 
