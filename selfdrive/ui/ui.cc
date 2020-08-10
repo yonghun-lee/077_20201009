@@ -19,6 +19,8 @@
 
 #include "dashcam.h"
 
+int nTime = 0;
+
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -39,11 +41,11 @@ static void enable_event_processing(bool yes) {
   }
 }
 
-static void set_awake(UIState *s, bool awake) {
+static void set_awake(UIState *s, bool awake, nTime) {
 #ifdef QCOM
   if (awake) {
     // 30 second timeout
-    s->awake_timeout = 30*UI_FREQ;
+    s->awake_timeout = (nTime > 0 && s->started)? nTime*60*UI_FREQ : 30*UI_FREQ;
   }
   if (s->awake != awake) {
     s->awake = awake;
@@ -194,7 +196,7 @@ static void ui_init(UIState *s) {
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
   assert(s->fb);
 
-  set_awake(s, true);
+  set_awake(s, true, nTime);
 
   ui_nvg_init(s);
 }
@@ -305,6 +307,9 @@ void handle_message(UIState *s, SubMaster &sm) {
       if (alert_sound == AudibleAlert::NONE) {
         s->sound.stop();
       } else {
+        if (nTime > 0) {
+          set_awake(s, true, nTime);
+        }
         s->sound.play(alert_sound);
       }
     }
@@ -818,6 +823,7 @@ int main(int argc, char* argv[]) {
 
   int draws = 0;
 
+  int nParamRead = 0;
   while (!do_exit) {
     bool should_swap = false;
     if (!s->started) {
@@ -828,12 +834,28 @@ int main(int argc, char* argv[]) {
     pthread_mutex_lock(&s->lock);
     double u1 = millis_since_boot();
 
+    // parameter Read.
+    nParamRead++;
+    switch( nParamRead )
+    {
+      case 1: ui_get_params( "OpkrAutoScreenOff", &scene.params.nOpkrAutoScreenOff ); break;
+      case 2: ui_get_params( "OpkrUIBrightness", &scene.params.nOpkrUIBrightness ); break;
+      case 3: ui_get_params( "OpkrUIVolumeBoost", &scene.params.nOpkrUIVolumeBoost ); break;
+      default: nParamRead = 0; break;
+    }
+    
+    nTime = scene.params.nOpkrAutoScreenOff
+
     // light sensor is only exposed on EONs
+    if (scene.params.nOpkrUIBrightness == 0) {
     float clipped_brightness = (s->light_sensor*brightness_m) + brightness_b;
     if (clipped_brightness > 512) clipped_brightness = 512;
     smooth_brightness = clipped_brightness * 0.01 + smooth_brightness * 0.99;
     if (smooth_brightness > 255) smooth_brightness = 255;
     ui_set_brightness(s, (int)smooth_brightness);
+    } else {
+      ui_set_brightness(s, (int)(255*scene.params.nOpkrUIBrightness*0.01));
+    }
 
     // resize vision for collapsing sidebar
     const bool hasSidebar = !s->scene.uilayout_sidebarcollapsed;
@@ -845,7 +867,7 @@ int main(int argc, char* argv[]) {
     int touch_x = -1, touch_y = -1;
     int touched = touch_poll(&touch, &touch_x, &touch_y, 0);
     if (touched == 1) {
-      set_awake(s, true);
+      set_awake(s, true, nTime);
 
       if( touch_x  < 1660 || touch_y < 885 )
       { 
@@ -866,7 +888,7 @@ int main(int argc, char* argv[]) {
         s->controls_timeout = 5 * UI_FREQ;
       }
     } else {
-      set_awake(s, true);
+      set_awake(s, true, nTime);
       // Car started, fetch a new rgb image from ipc
       if (s->vision_connected){
         ui_update(s);
@@ -887,7 +909,7 @@ int main(int argc, char* argv[]) {
     if (s->awake_timeout > 0) {
       s->awake_timeout--;
     } else {
-      set_awake(s, false);
+      set_awake(s, false, nTime);
     }
 
     // manage hardware disconnect
@@ -905,7 +927,11 @@ int main(int argc, char* argv[]) {
       should_swap = true;
     }
 
-    s->sound.setVolume(fmin(MAX_VOLUME, MIN_VOLUME + s->scene.controls_state.getVEgo() / 5)); // up one notch every 5 m/s
+    float min = MIN_VOLUME + s->scene.controls_state.getVEgo() / 5;
+    if (scene.params.nOpkrUIVolumeBoost > 0 || scene.params.nOpkrUIVolumeBoost < 0) {
+      min = min * (1 + scene.params.nOpkrUIVolumeBoost * 0.01);
+    }
+    s->sound.setVolume(fmin(MAX_VOLUME, min)); // up one notch every 5 m/s
 
     if (s->controls_timeout > 0) {
       s->controls_timeout--;
@@ -973,7 +999,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  set_awake(s, true);
+  set_awake(s, true, nTime);
 
   // wake up bg thread to exit
   pthread_mutex_lock(&s->lock);

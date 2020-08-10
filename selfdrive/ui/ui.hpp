@@ -181,6 +181,13 @@ typedef struct UIScene {
       float output_scale;
   } kegman;
 
+
+  struct  _PARAMS
+  {
+    int nOpkrAutoScreenOff;
+    int nOpkrUIBrightness;
+    int nOpkrUIVolumeBoost;
+  } params;
 } UIScene;
 
 typedef struct {
