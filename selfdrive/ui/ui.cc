@@ -41,7 +41,7 @@ static void enable_event_processing(bool yes) {
   }
 }
 
-static void set_awake(UIState *s, bool awake, nTime) {
+static void set_awake(UIState *s, bool awake, int nTime) {
 #ifdef QCOM
   if (awake) {
     // 30 second timeout
@@ -838,23 +838,23 @@ int main(int argc, char* argv[]) {
     nParamRead++;
     switch( nParamRead )
     {
-      case 1: ui_get_params( "OpkrAutoScreenOff", &scene.params.nOpkrAutoScreenOff ); break;
-      case 2: ui_get_params( "OpkrUIBrightness", &scene.params.nOpkrUIBrightness ); break;
-      case 3: ui_get_params( "OpkrUIVolumeBoost", &scene.params.nOpkrUIVolumeBoost ); break;
+      case 1: ui_get_params( "OpkrAutoScreenOff", &s->scene.params.nOpkrAutoScreenOff ); break;
+      case 2: ui_get_params( "OpkrUIBrightness", &s->scene.params.nOpkrUIBrightness ); break;
+      case 3: ui_get_params( "OpkrUIVolumeBoost", &s->scene.params.nOpkrUIVolumeBoost ); break;
       default: nParamRead = 0; break;
     }
     
-    nTime = scene.params.nOpkrAutoScreenOff;
+    nTime = s->scene.params.nOpkrAutoScreenOff;
 
     // light sensor is only exposed on EONs
-    if (scene.params.nOpkrUIBrightness == 0) {
+    if (s->scene.params.nOpkrUIBrightness == 0) {
     float clipped_brightness = (s->light_sensor*brightness_m) + brightness_b;
     if (clipped_brightness > 512) clipped_brightness = 512;
     smooth_brightness = clipped_brightness * 0.01 + smooth_brightness * 0.99;
     if (smooth_brightness > 255) smooth_brightness = 255;
     ui_set_brightness(s, (int)smooth_brightness);
     } else {
-      ui_set_brightness(s, (int)(255*scene.params.nOpkrUIBrightness*0.01));
+      ui_set_brightness(s, (int)(255*s->scene.params.nOpkrUIBrightness*0.01));
     }
 
     // resize vision for collapsing sidebar
@@ -928,8 +928,8 @@ int main(int argc, char* argv[]) {
     }
 
     float min = MIN_VOLUME + s->scene.controls_state.getVEgo() / 5;
-    if (scene.params.nOpkrUIVolumeBoost > 0 || scene.params.nOpkrUIVolumeBoost < 0) {
-      min = min * (1 + scene.params.nOpkrUIVolumeBoost * 0.01);
+    if (s->scene.params.nOpkrUIVolumeBoost > 0 || s->scene.params.nOpkrUIVolumeBoost < 0) {
+      min = min * (1 + s->scene.params.nOpkrUIVolumeBoost * 0.01);
     }
     s->sound.setVolume(fmin(MAX_VOLUME, min)); // up one notch every 5 m/s
 
