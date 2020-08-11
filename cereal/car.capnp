@@ -115,6 +115,11 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     laneChangeManual @90;
     emgButtonManual @91;
     driverSteering @92;
+    modeChangeOpenpilot @93;
+    modeChangeDistcurv @94;
+    modeChangeDistance @95;
+    modeChangeAutores @96;
+    modeChangeStock @97;
   }
 }
 

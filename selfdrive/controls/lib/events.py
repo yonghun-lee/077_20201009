@@ -504,6 +504,7 @@ EVENTS = {
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeOpenpilot, 1., .1, .1, alert_rate=0.75),
   },
+  
   EventName.modeChangeDistcurv: {
     ET.WARNING: Alert(
       "차간+커브 제어 모드",
