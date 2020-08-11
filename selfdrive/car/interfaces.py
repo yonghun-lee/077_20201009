@@ -92,11 +92,11 @@ class CarInterfaceBase():
       events.add(EventName.doorOpen)
     if cs_out.seatbeltUnlatched:
       events.add(EventName.seatbeltNotLatched)
-    if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears and pcm_enable:
+    if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears and cs_out.cruiseState.enabled:
       events.add(EventName.wrongGear)
-    if cs_out.gearShifter == GearShifter.reverse and pcm_enable:
+    if cs_out.gearShifter == GearShifter.reverse and cs_out.cruiseState.enabled:
       events.add(EventName.reverseGear)
-    if not cs_out.cruiseState.available and pcm_enable:
+    if not cs_out.cruiseState.available and cs_out.cruiseState.enabled:
       events.add(EventName.wrongCarMode)
     if cs_out.espDisabled:
       events.add(EventName.espDisabled)
