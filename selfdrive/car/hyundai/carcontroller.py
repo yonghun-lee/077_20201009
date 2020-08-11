@@ -267,19 +267,19 @@ class CarController():
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
 
     if CS.out.cruiseState.modeSel == 0 and self.mode_change_switch == 4:
-      self.mode_change_timer = 10
+      self.mode_change_timer = 50
       self.mode_change_switch = 0
     elif CS.out.cruiseState.modeSel == 1 and self.mode_change_switch == 0:
-      self.mode_change_timer = 10
+      self.mode_change_timer = 50
       self.mode_change_switch = 1
     elif CS.out.cruiseState.modeSel == 2 and self.mode_change_switch == 1:
-      self.mode_change_timer = 10
+      self.mode_change_timer = 50
       self.mode_change_switch = 2
     elif CS.out.cruiseState.modeSel == 3 and self.mode_change_switch == 2:
-      self.mode_change_timer = 10
+      self.mode_change_timer = 50
       self.mode_change_switch = 3
     elif CS.out.cruiseState.modeSel == 4 and self.mode_change_switch == 3:
-      self.mode_change_timer = 10
+      self.mode_change_timer = 50
       self.mode_change_switch = 4
     if self.mode_change_timer > 0:
       self.mode_change_timer -= 1
