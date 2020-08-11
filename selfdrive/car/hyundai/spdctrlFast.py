@@ -97,9 +97,6 @@ class SpdctrlFast(SpdController):
             self.seq_step_debug = "일반가속"
             lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1)
 
-        if set_speed - CS.VSetDis == 1:
-            lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 10, 1)
-
         return lead_wait_cmd, lead_set_speed
 
     def update_curv(self, CS, sm, model_speed):
