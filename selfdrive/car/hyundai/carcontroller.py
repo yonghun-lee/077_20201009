@@ -34,6 +34,7 @@ class CarController():
     self.lanechange_manual_timer = 0
     self.emergency_manual_timer = 0
     self.driver_steering_torque_above_timer = 0
+    self.mode_change_timer = 0
 
     self.steer_mode = ""
     self.mdps_status = ""
@@ -73,6 +74,9 @@ class CarController():
 
     kyd = kyd_conf()
     self.driver_steering_torque_above = float(kyd.conf['driverSteeringTorqueAbove'])
+
+    self.params = Params()
+    self.mode_change_switch = int(self.params.get('CruiseStatemodeSelInit'))
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
@@ -262,6 +266,24 @@ class CarController():
       str_log2 = '프레임율={:03.0f}  ST={:03.0f}/{:01.0f}/{:01.0f}  SR={:05.2f}'.format( self.timer1.sampleTime(), self.MAX, self.UP, self.DN, path_plan.steerRatio )
     trace1.printf( '{}  {}'.format( str_log1, str_log2 ) )
 
+    if CS.out.cruiseState.modeSel == 0 and self.mode_change_switch == 4:
+      self.mode_change_timer = 50
+      self.mode_change_switch = 0
+    elif CS.out.cruiseState.modeSel == 1 and self.mode_change_switch == 0:
+      self.mode_change_timer = 50
+      self.mode_change_switch = 1
+    elif CS.out.cruiseState.modeSel == 2 and self.mode_change_switch == 1:
+      self.mode_change_timer = 50
+      self.mode_change_switch = 2
+    elif CS.out.cruiseState.modeSel == 3 and self.mode_change_switch == 2:
+      self.mode_change_timer = 50
+      self.mode_change_switch = 3
+    elif CS.out.cruiseState.modeSel == 4 and self.mode_change_switch == 3:
+      self.mode_change_timer = 50
+      self.mode_change_switch = 4
+    else:
+      self.mode_change_timer -= 1
+
     run_speed_ctrl = self.param_OpkrAccelProfile and CS.acc_active and self.SC != None and (CS.out.cruiseState.modeSel == 1 or CS.out.cruiseState.modeSel == 2 or CS.out.cruiseState.modeSel == 3)
     if not run_speed_ctrl:
       if CS.out.cruiseState.modeSel == 0:
@@ -284,6 +306,7 @@ class CarController():
         self.lkas_switch = "ON"
       else:
         self.lkas_switch = "-"
+      
       if CS.out.cruiseState.modeSel == 3:
         str_log2 = '주행모드={:s}  MDPS상태={:s}  LKAS버튼={:s}  AUTORES=(VS:{:03.0f}/CN:{:01.0f}/RD:{:03.0f}/BK:{})'.format( self.steer_mode, self.mdps_status, self.lkas_switch, CS.VSetDis, self.res_cnt, self.res_delay, CS.out.brakeLights )
       else:

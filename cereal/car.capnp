@@ -346,6 +346,11 @@ struct CarControl {
       chimeRoadWarning @14;
       chimeSeatBelt @15;
       chimeViewUncertain @16;
+      chimeModeOpenpilot @17;
+      chimeModeDistcurv @18;
+      chimeModeDistance @19;
+      chimeModeAutores @20;
+      chimeModeStock @21;
     }
   }
 }

@@ -492,9 +492,45 @@ EVENTS = {
   EventName.steerSaturated: {
     ET.WARNING: Alert(
       "핸들을 잡아주세요",
-      "도로의 곡률이 커 자동조향이 저하되고 있습니다",
+      "차로유지 범위를 이탈하고 있습니다",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
+  },
+
+  EventName.modeChangeOpenpilot: {
+    ET.WARNING: Alert(
+      "오픈파일럿 모드",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeOpenpilot, 1., .1, .1, alert_rate=0.75),
+  },
+  EventName.modeChangeDistcurv: {
+    ET.WARNING: Alert(
+      "차간+커브 제어 모드",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistcurv, 1., .1, .1, alert_rate=0.75),
+  },
+  EventName.modeChangeDistance: {
+    ET.WARNING: Alert(
+      "차간ONLY 제어 모드",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistance, 1., .1, .1, alert_rate=0.75),
+  },
+  EventName.modeChangeAutores: {
+    ET.WARNING: Alert(
+      "자동RES 모드",
+      "사용에 주의 필요",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeAutores, 1., .1, .1, alert_rate=0.75),
+  },
+  EventName.modeChangeStock: {
+    ET.WARNING: Alert(
+      "순정 모드",
+      "",
+      AlertStatus.normal, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeStock, 1., .1, .1, alert_rate=0.75),
   },
 
 
@@ -513,7 +549,7 @@ EVENTS = {
   },
 
   EventName.buttonCancel: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
   },
 
   EventName.brakeHold: {
@@ -533,7 +569,7 @@ EVENTS = {
   },
 
   EventName.wrongCarMode: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
     ET.NO_ENTRY: wrong_car_mode_alert,
   },
 
