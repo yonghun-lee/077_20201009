@@ -276,10 +276,10 @@ class CarController():
       self.mode_change_timer = 100
       self.mode_change_switch = 2
     elif CS.out.cruiseState.modeSel == 3 and self.mode_change_switch == 2:
-      self.mode_change_timer = 50
+      self.mode_change_timer = 100
       self.mode_change_switch = 3
     elif CS.out.cruiseState.modeSel == 4 and self.mode_change_switch == 3:
-      self.mode_change_timer = 0
+      self.mode_change_timer = 100
       self.mode_change_switch = 4
     if self.mode_change_timer > 0:
       self.mode_change_timer -= 1
