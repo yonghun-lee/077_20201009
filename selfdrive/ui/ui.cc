@@ -19,8 +19,6 @@
 
 #include "dashcam.h"
 
-int nTime = 0;
-
 static void ui_set_brightness(UIState *s, int brightness) {
   static int last_brightness = -1;
   if (last_brightness != brightness && (s->awake || brightness == 0)) {
@@ -41,11 +39,11 @@ static void enable_event_processing(bool yes) {
   }
 }
 
-static void set_awake(UIState *s, bool awake, int nTime) {
+static void set_awake(UIState *s, bool awake) {
 #ifdef QCOM
   if (awake) {
     // 30 second timeout
-    s->awake_timeout = (nTime > 0 && s->started)? nTime*60*UI_FREQ : 30*UI_FREQ;
+    s->awake_timeout = (s->scene.params.nOpkrAutoScreenOff && s->started)? s->scene.params.nOpkrAutoScreenOff*60*UI_FREQ : 30*UI_FREQ;
   }
   if (s->awake != awake) {
     s->awake = awake;
@@ -196,7 +194,7 @@ static void ui_init(UIState *s) {
   s->fb = framebuffer_init("ui", 0, true, &s->fb_w, &s->fb_h);
   assert(s->fb);
 
-  set_awake(s, true, nTime);
+  set_awake(s, true);
 
   ui_nvg_init(s);
 }
@@ -307,8 +305,8 @@ void handle_message(UIState *s, SubMaster &sm) {
       if (alert_sound == AudibleAlert::NONE) {
         s->sound.stop();
       } else {
-        if (nTime > 0) {
-          set_awake(s, true, nTime);
+        if (s->scene.params.nOpkrAutoScreenOff) {
+          set_awake(s, true);
         }
         s->sound.play(alert_sound);
       }
@@ -823,6 +821,10 @@ int main(int argc, char* argv[]) {
 
   int draws = 0;
 
+  if (s->scene.params.nOpkrAutoScreenOff) {
+    set_awake(s, true);
+  }
+
   int nParamRead = 0;
   while (!do_exit) {
     bool should_swap = false;
@@ -843,8 +845,6 @@ int main(int argc, char* argv[]) {
       case 3: ui_get_params( "OpkrUIVolumeBoost", &s->scene.params.nOpkrUIVolumeBoost ); break;
       default: nParamRead = 0; break;
     }
-    
-    nTime = s->scene.params.nOpkrAutoScreenOff;
 
     // light sensor is only exposed on EONs
     if (s->scene.params.nOpkrUIBrightness == 0) {
@@ -867,17 +867,21 @@ int main(int argc, char* argv[]) {
     int touch_x = -1, touch_y = -1;
     int touched = touch_poll(&touch, &touch_x, &touch_y, 0);
     if (touched == 1) {
-      set_awake(s, true, nTime);
+      if (s->scene.params.nOpkrAutoScreenOff && s->awake_timeout == 0) {
+        set_awake(s, true);
+      } else {
+        set_awake(s, true,);
 
-      if( touch_x  < 1660 || touch_y < 885 )
-      { 
-        handle_sidebar_touch(s, touch_x, touch_y);
-        handle_vision_touch(s, touch_x, touch_y);
+        if( touch_x  < 1660 || touch_y < 885 )
+        { 
+          handle_sidebar_touch(s, touch_x, touch_y);
+          handle_vision_touch(s, touch_x, touch_y);
+        }
+        else
+        {
+          handle_openpilot_view_touch();
+        }        
       }
-      else
-      {
-        handle_openpilot_view_touch();
-      }        
     }
 
     if (!s->started) {
@@ -888,7 +892,11 @@ int main(int argc, char* argv[]) {
         s->controls_timeout = 5 * UI_FREQ;
       }
     } else {
-      set_awake(s, true, nTime);
+      if (s->scene.params.nOpkrAutoScreenOff) {
+        // do nothing
+      } else {
+        set_awake(s, true);
+      }
       // Car started, fetch a new rgb image from ipc
       if (s->vision_connected){
         ui_update(s);
@@ -909,7 +917,7 @@ int main(int argc, char* argv[]) {
     if (s->awake_timeout > 0) {
       s->awake_timeout--;
     } else {
-      set_awake(s, false, nTime);
+      set_awake(s, false);
     }
 
     // manage hardware disconnect
@@ -999,7 +1007,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  set_awake(s, true, nTime);
+  set_awake(s, true);
 
   // wake up bg thread to exit
   pthread_mutex_lock(&s->lock);
