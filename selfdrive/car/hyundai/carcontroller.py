@@ -33,6 +33,7 @@ class CarController():
     self.last_lead_distance = 0
     self.lanechange_manual_timer = 0
     self.emergency_manual_timer = 0
+    self.driver_steering_torque_above_timer = 0
 
     self.steer_mode = ""
     self.mdps_status = ""
@@ -69,6 +70,9 @@ class CarController():
 
     self.res_cnt = 7
     self.res_delay = 0
+
+    kyd = kyd_conf()
+    self.driver_steering_torque_above = kyd.conf['driverSteeringTorqueAbove']
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
@@ -208,12 +212,16 @@ class CarController():
       self.lanechange_manual_timer = 10
     if CS.out.leftBlinker and CS.out.rightBlinker:
       self.emergency_manual_timer = 10
-    if self.lanechange_manual_timer and abs(CS.out.steeringAngle) > 5.:
+    if abs(CS.out.steeringTorque) > self.driver_steering_torque_above:
+      self.driver_steering_torque_above_timer = 100
+    if self.lanechange_manual_timer or self.driver_steering_torque_above_timer:
       lkas_active = 0
     if self.lanechange_manual_timer > 0:
       self.lanechange_manual_timer -= 1
     if self.emergency_manual_timer > 0:
       self.emergency_manual_timer -= 1
+    if self.driver_steering_torque_above_timer > 0:
+      self.driver_steering_torque_above_timer -= 1
 
     if not lkas_active:
       apply_steer = 0

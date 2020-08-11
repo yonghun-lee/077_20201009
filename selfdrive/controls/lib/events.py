@@ -467,8 +467,8 @@ EVENTS = {
   
   EventName.laneChangeManual: {
     ET.WARNING: Alert(
-      "운전자 방향 전환 중",
-      "다른 차량에 주의하세요",
+      "저속 방향지시등 작동 중",
+      "자동조향이 일시 비활성화 됩니다 직접 조향하세요",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
   },
@@ -479,12 +479,20 @@ EVENTS = {
       "",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
+  },
+
+  EventName.driverSteering: {
+    ET.WARNING: Alert(
+      "운전자 직접 조향중",
+      "자동조향이 일시 비활성화 됩니다",
+      AlertStatus.userPrompt, AlertSize.mid,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, .0, .1, .1, alert_rate=0.75),
   },  
 
   EventName.steerSaturated: {
     ET.WARNING: Alert(
       "핸들을 잡아주세요",
-      "스티어링 토크가 높습니다",
+      "도로의 곡률이 커 자동조향이 저하되고 있습니다",
       AlertStatus.userPrompt, AlertSize.mid,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 1., 2., 3.),
   },

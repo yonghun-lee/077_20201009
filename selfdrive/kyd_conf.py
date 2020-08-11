@@ -129,6 +129,10 @@ class kyd_conf():
         self.config.update({"SteerLimitTimer":"0.4"})
         self.element_updated = True
 
+      if "driverSteeringTorqueAbove" not in self.config:
+        self.config.update({"driverSteeringTorqueAbove":"200"})
+        self.element_updated = True
+
       if self.element_updated:
         print("updated")
         self.write_config(self.config)
@@ -136,7 +140,7 @@ class kyd_conf():
     else:
       self.config = {"EnableLiveTune":"1", "steerMax":"255", "steerDeltaUp":"3", "steerDeltaDown":"7", \
       	             "steerAngleCorrection":"0.0", "cameraOffset":"0.06", "SteerActuatorDelay":"0.3", "SteerLimitTimer":"0.4", \
-      	             "Kp":"-1", "Ki":"-1", "Kf":"-1", \
+      	             "Kp":"-1", "Ki":"-1", "Kf":"-1", "driverSteeringTorqueAbove":"200", \
       	             "outerLoopGain":"-1", "innerLoopGain":"-1", "timeConstant":"-1", "actuatorEffectiveness":"-1", \
                      "scale":"-1", "ki":"-1", "dc_gain":"-1", \
                      "steerRatio":"-1", "steerRateCost":"-1", "deadzone":"0.0", \

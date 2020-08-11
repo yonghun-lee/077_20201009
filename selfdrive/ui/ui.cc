@@ -870,7 +870,7 @@ int main(int argc, char* argv[]) {
       if (s->scene.params.nOpkrAutoScreenOff && s->awake_timeout == 0) {
         set_awake(s, true);
       } else {
-        set_awake(s, true,);
+        set_awake(s, true);
 
         if( touch_x  < 1660 || touch_y < 885 )
         { 
