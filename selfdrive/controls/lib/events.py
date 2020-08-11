@@ -656,7 +656,7 @@ EVENTS = {
   },
 
   EventName.wrongGear: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),  #ET.SOFT_DISABLE: SoftDisableAlert("기어가 드라이브모드가 아닙니다"),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),  #ET.SOFT_DISABLE: SoftDisableAlert("기어가 드라이브모드가 아닙니다"),
     ET.NO_ENTRY: NoEntryAlert("기어가 드라이브모드가 아닙니다"),
   },
 
@@ -774,7 +774,7 @@ EVENTS = {
   },
 
   EventName.reverseGear: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
     ET.NO_ENTRY: NoEntryAlert("후진 기어"),
   },
 
