@@ -303,6 +303,9 @@ void handle_message(UIState *s, SubMaster &sm) {
     auto alert_sound = scene.controls_state.getAlertSound();
     if (scene.alert_type.compare(scene.controls_state.getAlertType()) != 0) {
       if (alert_sound == AudibleAlert::NONE) {
+        if (s->scene.params.nOpkrAutoScreenOff) {
+          set_awake(s, true);
+        }
         s->sound.stop();
       } else {
         if (s->scene.params.nOpkrAutoScreenOff) {
