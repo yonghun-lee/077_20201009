@@ -72,7 +72,7 @@ class CarController():
     self.res_delay = 0
 
     kyd = kyd_conf()
-    self.driver_steering_torque_above = kyd.conf['driverSteeringTorqueAbove']
+    self.driver_steering_torque_above = float(kyd.conf['driverSteeringTorqueAbove'])
 
   def process_hud_alert(self, enabled, CC ):
     visual_alert = CC.hudControl.visualAlert
