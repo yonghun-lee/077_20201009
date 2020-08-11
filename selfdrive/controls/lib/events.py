@@ -550,7 +550,7 @@ EVENTS = {
   },
 
   EventName.buttonCancel: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
   },
 
   EventName.brakeHold: {
@@ -570,12 +570,12 @@ EVENTS = {
   },
 
   EventName.wrongCarMode: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
     ET.NO_ENTRY: wrong_car_mode_alert,
   },
 
   EventName.wrongCruiseMode: {
-    ET.USER_DISABLE: EngagementAlert(AudibleAlert.none),
+    ET.USER_DISABLE: EngagementAlert(AudibleAlert.chimeDisengage),
     ET.NO_ENTRY: NoEntryAlert("어댑티브 크루즈를 활성화하세요"),
   },
 
