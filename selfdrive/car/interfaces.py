@@ -94,9 +94,9 @@ class CarInterfaceBase():
       events.add(EventName.seatbeltNotLatched)
     if cs_out.gearShifter != GearShifter.drive and cs_out.gearShifter not in extra_gears and pcm_enable:
       events.add(EventName.wrongGear)
-    if cs_out.gearShifter == GearShifter.reverse:
+    if cs_out.gearShifter == GearShifter.reverse and pcm_enable:
       events.add(EventName.reverseGear)
-    if not cs_out.cruiseState.available:
+    if not cs_out.cruiseState.available and pcm_enable:
       events.add(EventName.wrongCarMode)
     if cs_out.espDisabled:
       events.add(EventName.espDisabled)

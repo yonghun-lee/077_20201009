@@ -694,13 +694,13 @@ EVENTS = {
   EventName.commIssue: {
     ET.SOFT_DISABLE: SoftDisableAlert("프로세스 간 통신 오류가 있습니다"),
     ET.NO_ENTRY: NoEntryAlert("프로세스 간 통신 오류가 있습니다",
-                              audible_alert=AudibleAlert.chimeDisengage),
+                              audible_alert=AudibleAlert.none),
   },
 
   EventName.radarCommIssue: {
     ET.SOFT_DISABLE: SoftDisableAlert("레이더 통신 오류가 있습니다"),
     ET.NO_ENTRY: NoEntryAlert("레이더 통신 오류가 있습니다",
-                              audible_alert=AudibleAlert.chimeDisengage),
+                              audible_alert=AudibleAlert.none),
   },
 
   EventName.radarCanError: {
@@ -726,7 +726,7 @@ EVENTS = {
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
     ET.NO_ENTRY : NoEntryAlert("메모리 부족: 장치를 재시작하세요",
-                               audible_alert=AudibleAlert.chimeDisengage),
+                               audible_alert=AudibleAlert.none),
   },
 
   EventName.controlsFailed: {
@@ -802,7 +802,7 @@ EVENTS = {
       "오픈파일럿 시작불가",
       "선행차량이 없습니다",
       AlertStatus.normal, AlertSize.mid,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeDisengage, .4, 2., 3.),
+      Priority.HIGH, VisualAlert.none, AudibleAlert.none, .4, 2., 3.),
     ET.NO_ENTRY : NoEntryAlert("선행차량이 없습니다"),
   },
 
@@ -811,7 +811,7 @@ EVENTS = {
       "오픈파일럿 시작불가",
       "선행차량이 없습니다",
       AlertStatus.normal, AlertSize.mid,
-      Priority.HIGH, VisualAlert.none, AudibleAlert.chimeDisengage, .4, 2., 3.),
+      Priority.HIGH, VisualAlert.none, AudibleAlert.none, .4, 2., 3.),
   },
 
   EventName.speedTooHigh: {
@@ -834,7 +834,7 @@ EVENTS = {
       AlertStatus.normal, AlertSize.mid,
       Priority.LOWER, VisualAlert.none, AudibleAlert.none, 0., 0., .2),
     ET.NO_ENTRY: NoEntryAlert("인터넷에 연결하세요",
-                              audible_alert=AudibleAlert.chimeDisengage),
+                              audible_alert=AudibleAlert.none),
   },
 
   EventName.lowSpeedLockout: {
