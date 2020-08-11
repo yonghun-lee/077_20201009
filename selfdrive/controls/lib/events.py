@@ -502,7 +502,7 @@ EVENTS = {
       "오픈파일럿 모드",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeOpenpilot, 1., .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeOpenpilot, 1., 0, 1.),
   },
   
   EventName.modeChangeDistcurv: {
@@ -510,28 +510,28 @@ EVENTS = {
       "차간+커브 제어 모드",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistcurv, 1., .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistcurv, 1., 0, 1.),
   },
   EventName.modeChangeDistance: {
     ET.WARNING: Alert(
       "차간ONLY 제어 모드",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistance, 1., .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeDistance, 1., 0, 1.),
   },
   EventName.modeChangeAutores: {
     ET.WARNING: Alert(
       "자동RES 모드",
       "사용에 주의 필요",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeAutores, 1., .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeAutores, 1., 0, 1.),
   },
   EventName.modeChangeStock: {
     ET.WARNING: Alert(
       "순정 모드",
       "",
       AlertStatus.normal, AlertSize.small,
-      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeStock, 1., .1, .1, alert_rate=0.75),
+      Priority.LOW, VisualAlert.none, AudibleAlert.chimeModeStock, 1., 0, 1.),
   },
 
 
