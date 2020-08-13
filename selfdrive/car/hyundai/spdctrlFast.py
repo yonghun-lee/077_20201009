@@ -93,10 +93,10 @@ class SpdctrlFast(SpdController):
             elif lead_objspd < -1 and int(CS.clu_Vanz * 0.4) > dRel:
                 self.seq_step_debug = "감속(-1)"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, -1)
-            elif dRel > int(CS.clu_Vanz * 0.5) and CS.clu_Vanz > 30 and ((int(CS.clu_Vanz) - 2) > CS.VSetDis):
+            elif CS.clu_Vanz > 30 and ((int(CS.clu_Vanz) - 2) > CS.VSetDis):
                 self.seq_step_debug = "일반가속"
                 lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1)
-        elif dRel > int(CS.clu_Vanz * 0.6) and CS.clu_Vanz > 30 and ((int(CS.clu_Vanz) - 2) > CS.VSetDis):
+        elif CS.clu_Vanz > 30 and ((int(CS.clu_Vanz) - 2) > CS.VSetDis):
             self.seq_step_debug = "일반가속"
             lead_wait_cmd, lead_set_speed = self.get_tm_speed( CS, 100, 1)
 
