@@ -119,11 +119,15 @@ class PathPlanner():
 
     if not self.param_OpkrEnableLearner:
       kyd = kyd_conf()
-      self.steer_rate_cost = float(kyd.conf['steerRateCost'])
+      #self.steer_rate_cost = float(kyd.conf['steerRateCost'])
       self.sRBP = kyd.conf['sR_BP']
       self.sRBoost = kyd.conf['sR_Boost']
       boost_rate = interp(abs(angle_steers), self.sRBP, self.sRBoost)
       self.kyd_steerRatio = self.steerRatio + boost_rate
+
+      self.sR_Cost = [1.0,0.90,0.81,0.73,0.66,0.60,0.54,0.48,0.36,0.275,0.22,0.20,0.175,0.15,0.11,0.05]
+      #self.sR_Cost = [0.50,0.46,0.425,0.395,0.37,0.34,0.315,0.29,0.23,0.185,0.16,0.15,0.14,0.13,0.11,0.05]
+      self.steer_rate_cost = interp(abs(angle_steers), self.sRBP, self.sR_Cost)
 
 
     # Run MPC
